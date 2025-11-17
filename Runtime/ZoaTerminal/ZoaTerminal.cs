@@ -1,0 +1,17 @@
+using _SGUI_;
+using UnityEngine;
+
+namespace _ZOA_
+{
+    public partial class ZoaTerminal : SguiWindow1
+    {
+
+        //----------------------------------------------------------------------------------------------------------
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void OnAfterSceneLoad()
+        {
+            OSView.instance.AddOrGetSoftwareButton<ZoaTerminal>();
+        }
+    }
+}
