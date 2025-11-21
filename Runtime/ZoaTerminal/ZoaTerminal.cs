@@ -11,7 +11,7 @@ namespace _ZOA_
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void OnAfterSceneLoad()
         {
-            OSView.instance.AddOrGetSoftwareButton<ZoaTerminal>();
+            OSView.instance.GetSoftwareButton<ZoaTerminal>(force: true);
         }
     }
 }
