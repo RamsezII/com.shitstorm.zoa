@@ -1,5 +1,3 @@
-using _SGUI_;
-
 namespace _ZOA_
 {
     public class ZoaShellView : ShellView
@@ -7,5 +5,11 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            shell = new ZoaShell();
+        }
     }
 }
