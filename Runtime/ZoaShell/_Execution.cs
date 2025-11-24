@@ -1,5 +1,4 @@
-﻿using _COBRA_;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace _ZOA_
 {
@@ -12,8 +11,7 @@ namespace _ZOA_
 
         protected override void OnTick()
         {
-            CodeReader tick_reader = new(null, false, null, null);
-            Signal tick_sig = new(SIG_FLAGS.EXEC, tick_reader);
+            Signal tick_sig = new(SIG_FLAGS.EXEC, null);
 
             if (background_executors.Count > 0)
                 for (int i = 0; i < background_executors.Count; ++i)

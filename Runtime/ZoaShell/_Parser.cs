@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace _ZOA_
 {
@@ -26,24 +25,6 @@ namespace _ZOA_
                                         └── Appel de fonction
 
         */
-
-        enum INSTR_CODES : byte
-        {
-            _none_,
-            Block,
-            Instruction,
-            Expression,
-            Assignation,
-            Or,
-            And,
-            Comparison,
-            Addition,
-            Term,
-            Literal,
-            Variable,
-            Parenthesis,
-            FunctionCall,
-        }
 
         enum OP_CODES : byte
         {
