@@ -1,36 +1,60 @@
 ﻿using _UTIL_;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace _ZOA_
 {
-    sealed class MemScope : Disposable
+    public sealed class MemScope : Disposable
     {
-        readonly MemScope parent;
-        readonly List<MemScope> sub_scopes = new();
+        public class MemCell
+        {
+            public readonly Type _type;
+            public object _value;
 
-        internal readonly List<object> stack = new();
-        internal readonly Dictionary<string, object> heap = new(StringComparer.OrdinalIgnoreCase);
+            //----------------------------------------------------------------------------------------------------------
+
+            public MemCell(in Type type, in object value = null)
+            {
+                _type = type;
+                _value = value;
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+
+            public void AssignValue(in object value)
+            {
+                _value = value;
+            }
+        }
+
+        readonly MemScope parent;
+
+        internal readonly Dictionary<string, MemCell> _variables = new(StringComparer.OrdinalIgnoreCase);
 
         //----------------------------------------------------------------------------------------------------------
 
-        MemScope(in MemScope parent)
+        internal MemScope(in MemScope parent = null)
         {
             this.parent = parent;
         }
 
-        internal MemScope()
-        {
-
-        }
-
         //----------------------------------------------------------------------------------------------------------
 
-        public MemScope AddScope()
+        public IEnumerable<string> EVarNames()
         {
-            MemScope scope = new(this);
-            sub_scopes.Add(scope);
-            return scope;
+            if (parent != null)
+                return _variables.Keys.Union(parent.EVarNames());
+            return _variables.Keys;
+        }
+
+        public bool TryGetCell(in string name, out MemCell cell)
+        {
+            if (_variables.TryGetValue(name, out cell))
+                return true;
+            else if (parent != null)
+                return parent.TryGetCell(name, out cell);
+            return false;
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -38,13 +62,7 @@ namespace _ZOA_
         protected override void OnDispose()
         {
             base.OnDispose();
-
-            for (int i = 0; i < sub_scopes.Count; i++)
-                sub_scopes[i].Dispose();
-            sub_scopes.Clear();
-
-            stack.Clear();
-            heap.Clear();
+            _variables.Clear();
         }
     }
 }

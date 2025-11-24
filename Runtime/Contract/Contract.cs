@@ -6,9 +6,12 @@ namespace _ZOA_
 {
     public sealed class Contract
     {
-        internal readonly Action<Executor, Signal> parameters;
-        internal readonly Func<Executor, ZoaData> function;
-        internal readonly Func<Executor, IEnumerator<ZoaData>> routine;
+        public readonly string name;
+        internal readonly Action<ContractExecutor, Signal> options;
+        internal readonly Action<ContractExecutor, Signal> parameters;
+        internal readonly Type output_type;
+        internal readonly Func<ContractExecutor, object> function;
+        internal readonly Func<ContractExecutor, IEnumerator<ExecutionOutput>> routine;
 
         public static readonly Dictionary<string, Contract> contracts = new(StringComparer.OrdinalIgnoreCase);
 
@@ -23,12 +26,18 @@ namespace _ZOA_
         //----------------------------------------------------------------------------------------------------------
 
         public Contract(
-            in Action<Executor, Signal> parameters = null,
-            in Func<Executor, ZoaData> function = null,
-            in Func<Executor, IEnumerator<ZoaData>> routine = null
+            in string name,
+            in Action<ContractExecutor, Signal> options = null,
+            in Action<ContractExecutor, Signal> parameters = null,
+            in Type output_type = null,
+            in Func<ContractExecutor, object> function = null,
+            in Func<ContractExecutor, IEnumerator<ExecutionOutput>> routine = null
             )
         {
+            this.name = name;
+            this.options = options;
             this.parameters = parameters;
+            this.output_type = output_type;
             this.function = function;
             this.routine = routine;
         }

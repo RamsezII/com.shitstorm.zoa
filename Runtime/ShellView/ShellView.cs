@@ -26,7 +26,7 @@ namespace _ZOA_
 
         LintedString GetShellPrefixe() => shell.status._value switch
         {
-            Shell.STATUS.BLOCKED => LintedString.EMPTY,
+            CMD_STATUS.BLOCKED => LintedString.EMPTY,
             _ => shell.prefixe._value,
         };
 
@@ -65,15 +65,15 @@ namespace _ZOA_
             {
                 switch (value)
                 {
-                    case Shell.STATUS.WAIT_FOR_STDIN:
+                    case CMD_STATUS.WAIT_FOR_STDIN:
                         ResetStdin();
                         break;
 
-                    case Shell.STATUS.BLOCKED:
+                    case CMD_STATUS.BLOCKED:
                         ResetStdin();
                         break;
 
-                    case Shell.STATUS.NETWORKING:
+                    case CMD_STATUS.NETWORKING:
                         break;
                 }
             });

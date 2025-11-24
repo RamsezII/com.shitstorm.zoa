@@ -14,7 +14,7 @@ namespace _ZOA_
         {
             switch (shell.status._value)
             {
-                case Shell.STATUS.WAIT_FOR_STDIN:
+                case CMD_STATUS.WAIT_FOR_STDIN:
                     try
                     {
                         switch (addedChar)
@@ -39,11 +39,11 @@ namespace _ZOA_
                         return '\0';
                     }
 
-                case Shell.STATUS.BLOCKED:
+                case CMD_STATUS.BLOCKED:
                     ResetStdin();
                     return '\0';
 
-                case Shell.STATUS.NETWORKING:
+                case CMD_STATUS.NETWORKING:
                     return '\0';
 
                 default:
@@ -61,15 +61,15 @@ namespace _ZOA_
 
             switch (shell.status._value)
             {
-                case Shell.STATUS.WAIT_FOR_STDIN:
+                case CMD_STATUS.WAIT_FOR_STDIN:
                     OnChange();
                     break;
 
-                case Shell.STATUS.BLOCKED:
+                case CMD_STATUS.BLOCKED:
                     ResetStdin();
                     return;
 
-                case Shell.STATUS.NETWORKING:
+                case CMD_STATUS.NETWORKING:
                     break;
             }
         }

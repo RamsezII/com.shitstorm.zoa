@@ -4,18 +4,20 @@ using System;
 
 namespace _ZOA_
 {
+    public enum CMD_STATUS : byte
+    {
+        BLOCKED,
+        WAIT_FOR_STDIN,
+        NETWORKING,
+        RETURN,
+    }
+
     public abstract partial class Shell : Disposable
     {
-        public enum STATUS : byte
-        {
-            WAIT_FOR_STDIN,
-            BLOCKED,
-            NETWORKING,
-        }
-
-        public readonly ValueHandler<STATUS> status = new();
+        public readonly ValueHandler<CMD_STATUS> status = new();
         public readonly ValueHandler<LintedString> prefixe = new();
-        public Action<string, string> on_output;
+        public readonly MemScope mem_scope = new();
+        public Action<object, string> on_output;
 
         //----------------------------------------------------------------------------------------------------------
 

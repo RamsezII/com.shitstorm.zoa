@@ -8,7 +8,7 @@ namespace _ZOA_
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnBeforeSceneLoad()
         {
-            Contract.contracts.Add("echo", new(
+            Contract.contracts.Add("echo", new("echo",
                 parameters: (exe, sig) =>
                 {
                     if (sig.reader.TryParseString(out string s, true))
@@ -16,15 +16,15 @@ namespace _ZOA_
                 },
                 function: static exe =>
                 {
-                    return new(data: exe.parameters[0]);
+                    return exe.parameters[0];
                 }
             ));
 
-            Contract.contracts.Add("wait", new(
+            Contract.contracts.Add("wait", new("wait",
                 routine: static exe =>
                 {
                     return ERoutine(exe);
-                    static IEnumerator<ZoaData> ERoutine(Executor exe)
+                    static IEnumerator<ExecutionOutput> ERoutine(Executor exe)
                     {
                         float timer = 0;
                         while (timer < 1)
