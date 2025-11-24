@@ -100,13 +100,14 @@ namespace _ZOA_
 
         void ResetStdin()
         {
-            stdin_field.lint.text = shell.prefixe._value.lint ?? string.Empty;
+            LintedString prefixe = GetShellPrefixe();
 
-            string prefixe = shell.prefixe._value.text ?? string.Empty;
-            if (!prefixe.Equals(stdin_field.text, StringComparison.Ordinal))
-                stdin_field.text = prefixe;
+            if (!stdin_field.text.Equals(prefixe.text, StringComparison.Ordinal))
+                stdin_field.text = prefixe.text;
 
-            stdin_field.caretPosition = prefixe.Length;
+            stdin_field.lint.text = prefixe.lint;
+
+            stdin_field.caretPosition = prefixe.text.Length;
 
             ResizeStdin();
         }
@@ -129,7 +130,7 @@ namespace _ZOA_
 
         bool CheckStdin()
         {
-            string prefixe = shell.prefixe._value.text ?? string.Empty;
+            string prefixe = GetShellPrefixe().text;
             string current = stdin_field.text;
 
             if (current.StartsWith(prefixe, StringComparison.Ordinal))

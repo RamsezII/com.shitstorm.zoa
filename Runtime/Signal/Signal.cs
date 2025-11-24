@@ -1,4 +1,5 @@
-﻿using System;
+﻿using _COBRA_;
+using System;
 
 namespace _ZOA_
 {
@@ -21,22 +22,14 @@ namespace _ZOA_
     public sealed class Signal
     {
         public readonly SIG_FLAGS flags;
-        public readonly string text;
-        public readonly int cursor;
-
-        public int read_i;
-
-        public string output_text, output_lint;
+        public CodeReader reader;
 
         //----------------------------------------------------------------------------------------------------------
 
-        public Signal(in SIG_FLAGS flags, in string text, in int cursor = 0)
+        public Signal(in SIG_FLAGS flags, in CodeReader reader)
         {
             this.flags = flags;
-            this.text = text;
-            this.cursor = cursor;
-
-            output_text = output_lint = text;
+            this.reader = reader;
         }
 
         //----------------------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using _COBRA_;
 
 namespace _ZOA_
 {
@@ -8,18 +8,21 @@ namespace _ZOA_
         {
             if (GetStdin(out string stdin, out int cursor))
             {
-                Signal signal = new(SIG_FLAGS.LINT, stdin, cursor);
-                shell.OnSignal(signal);
+                CodeReader reader = new(
+                    lint_theme: lint_theme,
+                    strict_syntax: false,
+                    text: stdin,
+                    script_path: null,
+                    cursor_i: cursor
+                );
 
-                string new_stdin = shell.prefixe._value.text + signal.output_text;
-                string new_lint = shell.prefixe._value.lint + signal.output_lint;
+                Signal sig_change = new(SIG_FLAGS.LINT, reader);
+                shell.OnSignal(sig_change);
 
-                if (!stdin_field.text.Equals(new_stdin, StringComparison.Ordinal))
-                    stdin_field.text = new_stdin;
-                stdin_field.lint.text = new_lint;
+                stdin_field.lint.text = shell.prefixe._value.lint + sig_change.reader.GetLintResult();
             }
             else
-                stdin_field.lint.text = shell.prefixe._value.lint;
+                ResetStdin();
 
             ResizeStdin();
         }
@@ -33,12 +36,34 @@ namespace _ZOA_
         {
             if (GetStdin(out string stdin, out int cursor))
             {
-                Signal sig_check = new(SIG_FLAGS.CHECK | SIG_FLAGS.LINT, stdin, cursor);
+                AddLine(stdin_field.text, stdin_field.lint.text);
+
+                CodeReader reader1 = new(
+                    lint_theme: lint_theme,
+                    strict_syntax: false,
+                    text: stdin,
+                    script_path: null,
+                    cursor_i: cursor
+                );
+
+                Signal sig_check = new(SIG_FLAGS.CHECK | SIG_FLAGS.LINT, reader1);
                 shell.OnSignal(sig_check);
 
-                AddLine(shell.prefixe._value.text + sig_check.output_text, shell.prefixe._value.lint + sig_check.output_lint);
+                if (sig_check.reader.sig_error != null)
+                {
+                    AddLine(sig_check.reader.sig_error, sig_check.reader.sig_error.SetColor(Colors.orange));
+                    return;
+                }
 
-                Signal sig_exec = new(SIG_FLAGS.EXEC, stdin, cursor);
+                CodeReader reader2 = new(
+                    lint_theme: lint_theme,
+                    strict_syntax: false,
+                    text: stdin,
+                    script_path: null,
+                    cursor_i: cursor
+                );
+
+                Signal sig_exec = new(SIG_FLAGS.EXEC, reader2);
                 shell.OnSignal(sig_exec);
             }
         }

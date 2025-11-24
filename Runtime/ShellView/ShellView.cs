@@ -1,4 +1,5 @@
-﻿using _SGUI_;
+﻿using _COBRA_;
+using _SGUI_;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,8 +21,14 @@ namespace _ZOA_
             offset_top_h = 2,
             offset_bottom_h = 5;
 
-        public Shell shell;
         public LintTheme lint_theme;
+        public Shell shell;
+
+        LintedString GetShellPrefixe() => shell.status._value switch
+        {
+            Shell.STATUS.BLOCKED => LintedString.EMPTY,
+            _ => shell.prefixe._value,
+        };
 
         //----------------------------------------------------------------------------------------------------------
 
@@ -53,6 +60,23 @@ namespace _ZOA_
             stdin_field.onDeselect.AddListener(OnDeselectStdin);
 
             shell.Init();
+            shell.on_output += AddLine;
+            shell.status.AddListener(value =>
+            {
+                switch (value)
+                {
+                    case Shell.STATUS.WAIT_FOR_STDIN:
+                        ResetStdin();
+                        break;
+
+                    case Shell.STATUS.BLOCKED:
+                        ResetStdin();
+                        break;
+
+                    case Shell.STATUS.NETWORKING:
+                        break;
+                }
+            });
 
             ResetStdin();
             RefreshStdout();

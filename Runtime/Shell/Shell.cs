@@ -1,4 +1,6 @@
-﻿using _UTIL_;
+﻿using _ARK_;
+using _UTIL_;
+using System;
 
 namespace _ZOA_
 {
@@ -13,25 +15,28 @@ namespace _ZOA_
 
         public readonly ValueHandler<STATUS> status = new();
         public readonly ValueHandler<LintedString> prefixe = new();
+        public Action<string, string> on_output;
 
         //----------------------------------------------------------------------------------------------------------
 
         public void Init()
         {
             RefreshPrefixe();
+            Util.AddAction(ref NUCLEOR.delegates.Update_OnShellTick, OnTick);
         }
 
         //----------------------------------------------------------------------------------------------------------
 
-        public virtual void OnSignal(in Signal signal)
-        {
+        public abstract void OnSignal(in Signal signal);
 
-        }
+        protected abstract void OnTick();
 
         //----------------------------------------------------------------------------------------------------------
 
         protected override void OnDispose()
         {
+            NUCLEOR.delegates.Update_OnShellTick -= OnTick;
+
             base.OnDispose();
 
             status.Dispose();
