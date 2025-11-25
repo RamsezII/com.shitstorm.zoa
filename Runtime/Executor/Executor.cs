@@ -40,5 +40,13 @@ namespace _ZOA_
         }
 
         internal abstract IEnumerator<ExecutionOutput> EExecution();
+
+        //----------------------------------------------------------------------------------------------------------
+
+        protected override void OnDispose()
+        {
+            base.OnDispose();
+            routine?.Dispose();
+        }
     }
 }

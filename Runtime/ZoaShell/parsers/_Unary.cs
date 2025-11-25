@@ -1,4 +1,6 @@
-﻿namespace _ZOA_
+﻿using Mono.Cecil.Cil;
+
+namespace _ZOA_
 {
     partial class ZoaShell
     {
@@ -55,6 +57,9 @@
                     return false;
                 }
             }
+
+            if (TryParseFactor(signal, scope, out executor))
+                return true;
 
             executor = null;
             return false;

@@ -11,13 +11,18 @@ namespace _ZOA_
 
         protected override void OnTick()
         {
-            Signal tick_sig = new(SIG_FLAGS.EXEC, null);
+            Signal signal = new(SIG_FLAGS.EXEC, null);
+            OnBackgroundSignal(signal);
+            OnFrontSignal(signal);
+        }
 
+        void OnBackgroundSignal(in Signal signal)
+        {
             if (background_executors.Count > 0)
                 for (int i = 0; i < background_executors.Count; ++i)
                 {
                     Executor exe = background_executors[i];
-                    ExecutionOutput output = exe.OnSignal(tick_sig);
+                    ExecutionOutput output = exe.OnSignal(signal);
                     if (!exe.isDone)
                     {
                         background_executors.RemoveAt(i--);
@@ -26,11 +31,15 @@ namespace _ZOA_
                         exe.Dispose();
                     }
                 }
+        }
 
+        void OnFrontSignal(in Signal signal)
+        {
             if (front_executor != null)
             {
-                ExecutionOutput output = front_executor.OnSignal(tick_sig);
+                ExecutionOutput output = front_executor.OnSignal(signal);
                 status.Value = output.status;
+
                 if (front_executor.isDone)
                 {
                     on_output?.Invoke(output.data, output.lint);

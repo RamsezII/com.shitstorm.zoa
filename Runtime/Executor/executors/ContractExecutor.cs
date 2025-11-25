@@ -6,7 +6,6 @@ namespace _ZOA_
     {
         internal readonly Contract contract;
         public readonly Dictionary<object, object> parameters = new();
-        readonly IEnumerator<ExecutionOutput> routine;
 
         //----------------------------------------------------------------------------------------------------------
 
@@ -48,23 +47,14 @@ namespace _ZOA_
         internal override IEnumerator<ExecutionOutput> EExecution()
         {
             if (contract.function != null)
+                yield return new ExecutionOutput(CMD_STATUS.RETURN, data: contract.function(this));
+            else
             {
-                ExecutionOutput output = new(CMD_STATUS.RETURN, data: contract.function(this));
-                yield return new(status: CMD_STATUS.RETURN, data: output);
+                using var routine = contract.routine(this);
+                while (routine.MoveNext())
+                    yield return routine.Current;
+                yield return new(CMD_STATUS.RETURN, data: routine.Current.data, progress: 1, error: routine.Current.error);
             }
-
-            while (routine.MoveNext())
-                yield return routine.Current;
-
-            yield return new(CMD_STATUS.RETURN, data: routine.Current.data, progress: 1, error: routine.Current.error);
-        }
-
-        //----------------------------------------------------------------------------------------------------------
-
-        protected override void OnDispose()
-        {
-            base.OnDispose();
-            routine?.Dispose();
         }
     }
 }

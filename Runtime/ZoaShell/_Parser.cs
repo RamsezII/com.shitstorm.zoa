@@ -63,7 +63,13 @@ namespace _ZOA_
         public override void OnSignal(in Signal signal)
         {
             if (TryParseBlock(signal, new MemScope(mem_scope), out Executor executor) && signal.reader.sig_error == null)
-                front_executor = executor;
+            {
+                if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                {
+                    front_executor = executor;
+                    OnFrontSignal(signal);
+                }
+            }
             else
                 signal.reader.sig_error ??= $"could not parse {nameof(signal)}";
         }
