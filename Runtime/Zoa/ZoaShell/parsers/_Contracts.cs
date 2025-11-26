@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace _ZOA_
@@ -74,20 +75,22 @@ namespace _ZOA_
                         executor.routine_SIG_ALL = EExecute_SIG_ALL();
                         IEnumerator<ExecutionOutput> EExecute_SIG_ALL()
                         {
+                            int stack_count_expected = value_stack._stack.Count;
+
                             Dictionary<string, object> opts = null;
                             if (exe_opts != null)
                             {
                                 opts = new(exe_opts.Count);
                                 foreach (var pair in exe_opts)
-                                {
-                                    ZoaExecutor ex = pair.Value;
-                                    while (!ex.isDone)
+                                    if (pair.Value == null)
+                                        opts.Add(pair.Key, null);
+                                    else
                                     {
-                                        ExecutionOutput output = ex.OnSignal(exe.signal);
-                                        yield return output;
+                                        ZoaExecutor ex = pair.Value;
+                                        while (!ex.isDone)
+                                            yield return ex.OnSignal(exe.signal);
+                                        opts.Add(pair.Key, value_stack.Pop());
                                     }
-                                    opts.Add(pair.Key, ex.output);
-                                }
                             }
 
                             List<object> prms = null;
@@ -98,11 +101,8 @@ namespace _ZOA_
                                 {
                                     ZoaExecutor ex = exe_prms[i];
                                     while (!ex.isDone)
-                                    {
-                                        ExecutionOutput output = ex.OnSignal(exe.signal);
-                                        yield return output;
-                                    }
-                                    prms[i] = ex.output;
+                                        yield return ex.OnSignal(exe.signal);
+                                    prms[i] = value_stack.Pop();
                                 }
                             }
 
@@ -140,6 +140,18 @@ namespace _ZOA_
                             }
 
                             exe.isDone = true;
+
+                            if (contract.output_type != null)
+                                ++stack_count_expected;
+
+                            if (stack_count_expected != value_stack._stack.Count)
+                                exe.signal.exe_error ??= $"expected stack size: {stack_count_expected}, got: {value_stack._stack.Count}";
+                            else
+                            {
+                                Type actual_output_type = value_stack.Peek().GetType();
+                                if (contract.output_type != null && contract.output_type != actual_output_type)
+                                    exe.signal.exe_error ??= $"expected output type: {contract.output_type}, got: {actual_output_type}";
+                            }
                         }
                     }
 

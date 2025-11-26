@@ -29,6 +29,7 @@ namespace _ZOA_
         public readonly SIG_FLAGS flags;
         public readonly CodeReader reader;
         public readonly Action<object, string> Stdout;
+        public string exe_error;
 
         //----------------------------------------------------------------------------------------------------------
 

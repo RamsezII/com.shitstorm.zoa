@@ -10,7 +10,6 @@ namespace _ZOA_
         internal IEnumerator<ExecutionOutput> routine_SIG_EXE, routine_SIG_ALL;
 
         internal bool isDone;
-        public object output;
         public Signal signal;
 
         //----------------------------------------------------------------------------------------------------------

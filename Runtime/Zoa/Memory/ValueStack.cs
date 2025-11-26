@@ -4,7 +4,7 @@ namespace _ZOA_
 {
     public sealed partial class ValueStack
     {
-        readonly List<object> _stack = new();
+        internal readonly List<object> _stack = new();
 
         //----------------------------------------------------------------------------------------------------------
 
