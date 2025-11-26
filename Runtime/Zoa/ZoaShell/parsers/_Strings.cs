@@ -14,6 +14,8 @@ namespace _ZOA_
             out ZoaExecutor executor
         )
         {
+            bool is_exe = signal.flags.HasFlag(SIG_FLAGS.EXEC);
+
             executor = null;
             int read_old = signal.reader.read_i;
 
@@ -57,32 +59,33 @@ namespace _ZOA_
                             if (current_fragment.Length > 0 || exe_stack.Count == 0)
                                 exe_stack.Add(new(type_stack, value_stack, current_fragment));
 
-                            var exe = executor;
-                            exe = executor = new()
-                            {
-                                routine_SIG_ALL = EExecute_SIG_ALL(),
-                            };
+                            type_stack.Push(T_string);
 
                             // execute stack of fragments and expressions
-                            IEnumerator<ExecutionOutput> EExecute_SIG_ALL()
+                            if (is_exe)
                             {
-                                StringBuilder sb = new();
-                                for (int i = 0; i < exe_stack.Count; ++i)
+                                var exe = executor = new();
+                                executor.routine_SIG_ALL = EExecute_SIG_ALL();
+                                IEnumerator<ExecutionOutput> EExecute_SIG_ALL()
                                 {
-                                    ZoaExecutor ex = exe_stack[i];
-                                    while (!ex.isDone)
+                                    StringBuilder sb = new();
+                                    for (int i = 0; i < exe_stack.Count; ++i)
                                     {
-                                        ExecutionOutput output = ex.OnSignal(exe.signal);
-                                        yield return output;
-
-                                        if (ex.isDone)
+                                        ZoaExecutor ex = exe_stack[i];
+                                        while (!ex.isDone)
                                         {
-                                            object fragment = value_stack.Pop();
-                                            sb.Append(fragment);
+                                            ExecutionOutput output = ex.OnSignal(exe.signal);
+                                            yield return output;
+
+                                            if (ex.isDone)
+                                            {
+                                                object fragment = value_stack.Pop();
+                                                sb.Append(fragment);
+                                            }
                                         }
                                     }
+                                    value_stack.Push(sb.ToString());
                                 }
-                                value_stack.Push(sb.ToString());
                             }
                         }
                         return true;

@@ -42,6 +42,7 @@ namespace _ZOA_
                 this.signal = signal;
                 action_SIG_EXE(this);
                 this.signal = null;
+                isDone = true;
                 return new(CMD_STATUS.RETURN);
             }
 

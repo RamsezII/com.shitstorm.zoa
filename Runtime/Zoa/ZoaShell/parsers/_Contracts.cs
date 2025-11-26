@@ -32,9 +32,13 @@ namespace _ZOA_
 
                         foreach (var pair in contract.options)
                             if (pair.Value != null)
-                                if (TryParseExpression(signal, scope, type_stack, value_stack, false, pair.Value, out ZoaExecutor exe_opt))
-                                    if (is_exe)
-                                        exe_opts.Add(pair.Key.long_name, exe_opt);
+                                if (!TryParseExpression(signal, scope, type_stack, value_stack, false, pair.Value, out ZoaExecutor exe_opt))
+                                {
+                                    signal.reader.sig_error ??= $"could not parse expression for option {(pair.Key.short_name != '\0' ? $"\"-{pair.Key.short_name}\"" : string.Empty)}/\"--{pair.Key.long_name}\"";
+                                    goto failure;
+                                }
+                                else if (is_exe)
+                                    exe_opts.Add(pair.Key.long_name, exe_opt);
                     }
 
                     bool expects_parenthesis = signal.reader.strict_syntax;
@@ -46,7 +50,7 @@ namespace _ZOA_
                     if (expects_parenthesis && !found_parenthesis)
                     {
                         signal.reader.Stderr($"'{contract.name}' expected opening parenthesis '('");
-                        return false;
+                        goto failure;
                     }
 
                     List<ZoaExecutor> exe_prms = null;
@@ -55,19 +59,26 @@ namespace _ZOA_
                         if (is_exe)
                             exe_prms = new();
 
-                        foreach (var prm in contract.parameters)
-                            if (TryParseExpression(signal, scope, type_stack, value_stack, true, prm, out ZoaExecutor exe_prm))
-                                if (is_exe)
-                                    exe_prms.Add(exe_prm);
+                        for (int i = 0; i < contract.parameters._list.Count; i++)
+                        {
+                            Type arg_type = contract.parameters._list[i];
+                            if (!TryParseExpression(signal, scope, type_stack, value_stack, true, arg_type, out ZoaExecutor exe_prm))
+                            {
+                                signal.reader.sig_error ??= $"could not parse argument[{i}]";
+                                goto failure;
+                            }
+                            else if (is_exe)
+                                exe_prms.Add(exe_prm);
+                        }
                     }
 
                     if (signal.reader.sig_error != null)
-                        return false;
+                        goto failure;
 
                     if ((expects_parenthesis || found_parenthesis) && !signal.reader.TryReadChar_match(')', lint: signal.reader.CloseBraquetLint()))
                     {
                         signal.reader.Stderr($"'{contract.name}' expected closing parenthesis ')'");
-                        return false;
+                        goto failure;
                     }
 
                     if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
@@ -159,6 +170,8 @@ namespace _ZOA_
                     return true;
                 }
 
+            failure:
+            signal.reader.sig_error ??= $"could not parse contract";
             executor = null;
             return false;
         }

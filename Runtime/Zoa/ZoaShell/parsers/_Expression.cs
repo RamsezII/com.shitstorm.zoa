@@ -39,7 +39,9 @@ namespace _ZOA_
                         return false;
                     }
 
-            if (signal.reader.TryReadChar_match('?', lint: signal.reader.lint_theme.operators))
+            if (!signal.reader.TryReadChar_match('?', lint: signal.reader.lint_theme.operators))
+                return true;
+            else
             {
                 // cond output
                 Type type_predicat = type_stack.Pop();
@@ -88,6 +90,7 @@ namespace _ZOA_
                     }
                 }
             }
+
             return false;
         }
     }

@@ -9,7 +9,7 @@ namespace _ZOA_
         public readonly string name;
         public readonly Type output_type;
         internal readonly Dictionary<(char short_name, string long_name), Type> options;
-        internal readonly IEnumerable<Type> parameters;
+        internal readonly ZoaList<Type> parameters;
         internal readonly Action<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>> action_SIG_EXE;
         internal readonly Func<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_EXE, routine_SIG_ALL;
 
@@ -36,7 +36,7 @@ namespace _ZOA_
             in string name,
             in Type output_type,
             in Dictionary<(char, string), Type> options = null,
-            in IEnumerable<Type> parameters = null,
+            in ZoaList<Type> parameters = null,
             in Action<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>> action_SIG_EXE = null,
             in Func<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_EXE = null,
             in Func<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_ALL = null

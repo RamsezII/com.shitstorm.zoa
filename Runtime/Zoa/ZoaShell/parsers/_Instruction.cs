@@ -19,7 +19,7 @@
                 signal.reader.SkipUntil('\n');
                 goto skipped_comments;
             }
-            else if (TryParseExpression(signal, scope, type_stack, value_stack, false, T_object, out executor))
+            else if (TryParseExpression(signal, scope, type_stack, value_stack, false, null, out executor))
                 return true;
 
             executor = null;
