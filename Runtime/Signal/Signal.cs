@@ -1,11 +1,14 @@
 ﻿using _COBRA_;
 using System;
+using UnityEngine;
 
 namespace _ZOA_
 {
     enum SIG_ENUM : byte
     {
         _NONE_,
+        Cmd,
+        Sript,
         Lint,
         Check,
         Exec,
@@ -14,6 +17,8 @@ namespace _ZOA_
     [Flags]
     public enum SIG_FLAGS : byte
     {
+        CMD = 1 << SIG_ENUM.Cmd,
+        SCRIPT = 1 << SIG_ENUM.Sript,
         LINT = 1 << SIG_ENUM.Lint,
         CHECK = 1 << SIG_ENUM.Check,
         EXEC = 1 << SIG_ENUM.Exec,
@@ -22,18 +27,16 @@ namespace _ZOA_
     public sealed class Signal
     {
         public readonly SIG_FLAGS flags;
-        public CodeReader reader;
+        public readonly CodeReader reader;
+        public readonly Action<object, string> Stdout;
 
         //----------------------------------------------------------------------------------------------------------
 
-        public Signal(in SIG_FLAGS flags, in CodeReader reader)
+        public Signal(in SIG_FLAGS flags, in CodeReader reader, in Action<object, string> on_stdout)
         {
             this.flags = flags;
             this.reader = reader;
+            Stdout = on_stdout ?? ((data, lint) => Debug.Log(lint ?? data.ToString()));
         }
-
-        //----------------------------------------------------------------------------------------------------------
-
-
     }
 }

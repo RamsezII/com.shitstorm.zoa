@@ -1,11 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace _ZOA_
 {
     partial class ZoaShell
     {
-        public bool TryParseString(in Signal signal, in MemScope scope, out StringExecutor executor)
+        public bool TryParseString(
+            in Signal signal,
+            MemScope scope,
+            in TypeStack type_stack,
+            ValueStack value_stack,
+            out Executor executor
+        )
         {
             executor = null;
             int read_old = signal.reader.read_i;
@@ -23,8 +30,8 @@ namespace _ZOA_
             signal.reader.cpl_start = Mathf.Min(read_old + 1, signal.reader.read_i - 1);
             signal.reader.cpl_end = signal.reader.read_i - 1;
 
-            List<Executor> stack = new();
-            string value = string.Empty;
+            List<Executor> exe_stack = new();
+            string current_fragment = string.Empty;
             int start_i = signal.reader.read_i;
             bool flag_escape = false;
 
@@ -37,18 +44,46 @@ namespace _ZOA_
                         signal.reader.LintToThisPosition(signal.reader.lint_theme.quotes, false);
                         break;
 
+                    // the end
                     case '\'' or '"' when !flag_escape && c == sep:
                         {
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.strings, false, signal.reader.read_i - 1);
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.quotes, false);
 
-                            signal.reader.last_arg = value;
+                            signal.reader.last_arg = current_fragment;
                             signal.reader.cpl_end = signal.reader.read_i - 1;
 
-                            if (value.Length > 0 || stack.Count == 0)
-                                stack.Add(new LiteralExecutor(signal, scope, value));
+                            // grab buffer
+                            if (current_fragment.Length > 0 || exe_stack.Count == 0)
+                                exe_stack.Add(new(type_stack, value_stack, current_fragment));
 
-                            executor = new StringExecutor(signal, scope, stack);
+                            var exe = executor;
+                            exe = executor = new()
+                            {
+                                routine_SIG_ALL = EExecute_SIG_ALL(),
+                            };
+
+                            // execute stack of fragments and expressions
+                            IEnumerator<ExecutionOutput> EExecute_SIG_ALL()
+                            {
+                                StringBuilder sb = new();
+                                for (int i = 0; i < exe_stack.Count; ++i)
+                                {
+                                    Executor ex = exe_stack[i];
+                                    while (!ex.isDone)
+                                    {
+                                        ExecutionOutput output = ex.OnSignal(exe.signal);
+                                        yield return output;
+
+                                        if (ex.isDone)
+                                        {
+                                            object fragment = value_stack.Pop();
+                                            sb.Append(fragment);
+                                        }
+                                    }
+                                }
+                                value_stack.Push(sb.ToString());
+                            }
                         }
                         return true;
 
@@ -57,13 +92,14 @@ namespace _ZOA_
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.strings, false, signal.reader.read_i - 1);
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.quotes, false);
 
-                            if (value.Length > 0)
+                            // pull current fragment
+                            if (current_fragment.Length > 0)
                             {
-                                stack.Add(new LiteralExecutor(signal, scope, value));
-                                value = string.Empty;
+                                exe_stack.Add(new(type_stack, value_stack, current_fragment));
+                                current_fragment = string.Empty;
                             }
 
-                            if (!TryParseExpression(signal, scope, false, out ExpressionExecutor expr, type_check: false))
+                            if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out Executor inside_expr))
                             {
                                 signal.reader.Stderr($"expected expression after '{{'.");
                                 return false;
@@ -78,17 +114,17 @@ namespace _ZOA_
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.strings, false, signal.reader.read_i - 1);
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.quotes, false);
 
-                            stack.Add(expr);
+                            exe_stack.Add(inside_expr);
                         }
                         break;
 
                     default:
                         flag_escape = false;
-                        value += c;
+                        current_fragment += c;
                         break;
                 }
 
-            if (value.TryIndexOf_min(out int err_index, 0, true, ' ', '\t', '\n', '\r'))
+            if (current_fragment.TryIndexOf_min(out int err_index, 0, true, ' ', '\t', '\n', '\r'))
                 signal.reader.read_i = start_i + err_index;
             else
                 signal.reader.read_i = read_old;

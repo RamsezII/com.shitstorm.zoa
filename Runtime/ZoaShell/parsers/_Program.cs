@@ -1,4 +1,5 @@
 ﻿using _ARK_;
+using System.Collections.Generic;
 
 namespace _ZOA_
 {
@@ -6,20 +7,22 @@ namespace _ZOA_
     {
         public bool TryParseProgram(in Signal signal, in MemScope scope, out bool background, out Executor executor)
         {
-            background = false;
             executor = null;
+            background = false;
 
-            BlockExecutor program = new(signal, scope ?? new MemScope());
-            program.mem_scope._variables.Add("_args_", new(typeof(string[]), new string[] { "arg0", "arg1", }));
-            program.mem_scope._variables.Add("_home_dir_", new(typeof(string), ArkPaths.instance.Value.dpath_home));
+            MemScope sub_scope = new(scope);
+            sub_scope._vars.Add("_args_", new(typeof(string[]), new string[] { "arg0", "arg1", }));
+            sub_scope._vars.Add("_home_dir_", new(typeof(string), ArkPaths.instance.Value.dpath_home));
 
 #if UNITY_EDITOR
-            program.mem_scope._variables.Add("_assets_dir_", new(typeof(string), ArkPaths.instance.Value.dpath_assets));
+            sub_scope._vars.Add("_assets_dir_", new(typeof(string), ArkPaths.instance.Value.dpath_assets));
 #endif
 
-            while (TryParseBlock(signal, program.mem_scope, out var sub_block))
-                if (sub_block != null)
-                    program.stack.Add(sub_block);
+            List<Executor> stack_blocks = new();
+
+            while (TryParseBlock(signal, sub_scope, new TypeStack(), new ValueStack(), out Executor block_exe))
+                if (block_exe != null)
+                    stack_blocks.Add(block_exe);
 
             if (signal.reader.sig_error != null)
                 goto failure;
@@ -32,8 +35,16 @@ namespace _ZOA_
                 goto failure;
             }
 
-            executor = program;
-            return true;
+            if (stack_blocks.Count > 0)
+            {
+                executor = new()
+                {
+                    routine_SIG_ALL = Executor.EExecute_SIG_ALL(executor, stack_blocks),
+                };
+                return true;
+            }
+
+            return false;
 
         failure:
             signal.reader.LocalizeError();

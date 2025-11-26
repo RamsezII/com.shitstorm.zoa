@@ -16,7 +16,7 @@ namespace _ZOA_
                     cursor_i: cursor
                 );
 
-                Signal sig_change = new(SIG_FLAGS.LINT, reader);
+                Signal sig_change = new(SIG_FLAGS.LINT, reader, null);
                 shell.OnSignal(sig_change);
 
                 stdin_field.lint.text = shell.prefixe._value.lint + sig_change.reader.GetLintResult();
@@ -46,7 +46,7 @@ namespace _ZOA_
                     cursor_i: cursor
                 );
 
-                Signal sig_check = new(SIG_FLAGS.CHECK | SIG_FLAGS.LINT, reader1);
+                Signal sig_check = new(SIG_FLAGS.CHECK | SIG_FLAGS.LINT, reader1, null);
                 shell.OnSignal(sig_check);
 
                 if (sig_check.reader.sig_error != null)
@@ -63,7 +63,7 @@ namespace _ZOA_
                     cursor_i: cursor
                 );
 
-                Signal sig_exec = new(SIG_FLAGS.EXEC, reader2);
+                Signal sig_exec = new(SIG_FLAGS.EXEC, reader2, AddLine);
                 shell.OnSignal(sig_exec);
             }
         }

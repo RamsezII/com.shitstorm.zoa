@@ -8,20 +8,20 @@ namespace _ZOA_
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnBeforeSceneLoad()
         {
-            Contract.contracts.Add("echo", new("echo",
-                parameters: (exe, sig) =>
+            Contract.AddContract(new("echo",
+                parameters: (exe, sig, tstack) =>
                 {
-                    if (sig.reader.TryParseString(out string s, true))
-                        exe.parameters[0] = s;
+                    tstack.Pop();
                 },
-                function: static exe =>
+                action_SIG_EXE: static (exe, scope, vstack) =>
                 {
-                    return exe.parameters[0];
+                    object msg = vstack.Peek();
+                    exe.signal.Stdout(msg, msg.ToString().SetColor(Colors.yellow));
                 }
             ));
 
-            Contract.contracts.Add("wait", new("wait",
-                routine: static exe =>
+            Contract.AddContract(new("wait",
+                routine_SIG_EXE: static (exe, scope, vstack) =>
                 {
                     return ERoutine(exe);
                     static IEnumerator<ExecutionOutput> ERoutine(Executor exe)
@@ -32,6 +32,7 @@ namespace _ZOA_
                             timer += Time.unscaledDeltaTime;
                             yield return new(progress: timer);
                         }
+                        exe.signal.Stdout("wait end", null);
                     }
                 }
             ));

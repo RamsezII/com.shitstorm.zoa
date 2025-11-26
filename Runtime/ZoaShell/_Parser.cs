@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace _ZOA_
+﻿namespace _ZOA_
 {
     sealed partial class ZoaShell : Shell
     {
@@ -26,43 +24,11 @@ namespace _ZOA_
 
         */
 
-        enum OP_CODES : byte
-        {
-            assign,
-            not,
-            add, sub,
-            mul, div, mod,
-            eq, gt, lt,
-            and, or, xor,
-        }
-
-        [Flags]
-        public enum OP_FLAGS : ushort
-        {
-            unknown,
-            assign = 1 << OP_CODES.assign,
-            not = 1 << OP_CODES.not,
-            add = 1 << OP_CODES.add,
-            sub = 1 << OP_CODES.sub,
-            mul = 1 << OP_CODES.mul,
-            div = 1 << OP_CODES.div,
-            mod = 1 << OP_CODES.mod,
-            eq = 1 << OP_CODES.eq,
-            neq = not | eq,
-            gt = 1 << OP_CODES.gt,
-            lt = 1 << OP_CODES.lt,
-            ge = gt | eq,
-            le = lt | eq,
-            and = 1 << OP_CODES.and,
-            or = 1 << OP_CODES.or,
-            xor = 1 << OP_CODES.xor,
-        }
-
         //----------------------------------------------------------------------------------------------------------
 
         public override void OnSignal(in Signal signal)
         {
-            if (TryParseBlock(signal, new MemScope(mem_scope), out Executor executor) && signal.reader.sig_error == null)
+            if (TryParseBlock(signal, new MemScope(mem_scope), new TypeStack(), new ValueStack(), out Executor executor) && signal.reader.sig_error == null)
             {
                 if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
                 {

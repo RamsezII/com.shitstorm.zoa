@@ -10,6 +10,7 @@ namespace _ZOA_
         WAIT_FOR_STDIN,
         NETWORKING,
         RETURN,
+        ERROR,
     }
 
     public abstract partial class Shell : Disposable

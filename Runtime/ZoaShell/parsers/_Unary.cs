@@ -1,56 +1,91 @@
-﻿using Mono.Cecil.Cil;
+﻿using System;
 
 namespace _ZOA_
 {
     partial class ZoaShell
     {
-        internal bool TryParseUnary(in Signal signal, in MemScope scope, out ExpressionExecutor executor)
+        internal bool TryParseUnary(
+            in Signal signal,
+            MemScope scope,
+            in TypeStack type_stack,
+            ValueStack value_stack,
+            out Executor executor
+        )
         {
-            if (signal.reader.TryReadChar_matches_out(out char unary_operator, true, "+-!"))
+            int read_old = signal.reader.read_i;
+
+            if (!signal.reader.TryReadChar_matches_out(out char unary_operator, true, "+-!"))
             {
-                UnaryExecutor.Operators code = unary_operator switch
+                if (TryParseFactor(signal, scope, type_stack, value_stack, out executor))
+                    return true;
+            }
+            else
+            {
+                OP_CODES code = unary_operator switch
                 {
-                    '+' => UnaryExecutor.Operators.Add,
-                    '-' => UnaryExecutor.Operators.Sub,
-                    '!' => UnaryExecutor.Operators.Not,
+                    '+' => OP_CODES.ADD,
+                    '-' => OP_CODES.SUBSTRACT,
+                    '!' => OP_CODES.NOT,
                     _ => 0,
                 };
 
-                switch (code)
+                if ((code == OP_CODES.ADD || code == OP_CODES.SUBSTRACT) && signal.reader.TryReadChar_match(unary_operator, signal.reader.lint_theme.operators, skippables: null))
+                    ;
+                else
                 {
-                    case UnaryExecutor.Operators.Add:
-                    case UnaryExecutor.Operators.Sub:
-                        {
-                            int read_old = signal.reader.read_i;
-                            if (signal.reader.TryReadChar_match(unary_operator, signal.reader.lint_theme.operators, skippables: null))
+                    if (!signal.reader.TryReadArgument(out string var_name, false, signal.reader.lint_theme.variables, skippables: null))
+                        signal.reader.Stderr($"expected variable after increment operator '{unary_operator}{unary_operator}'.");
+                    else if (!scope.TryGetCell(var_name, out MemCell cell))
+                        signal.reader.Stderr($"no variable named '{var_name}'.");
+                    else
+                    {
+                        type_stack.Push(cell.type);
+
+                        executor = new();
+
+                        if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                            executor.action_SIG_EXE = exe =>
                             {
-                                if (!signal.reader.TryReadArgument(out string var_name, false, signal.reader.lint_theme.variables, skippables: null))
-                                    signal.reader.Stderr($"expected variable after increment operator '{unary_operator}{unary_operator}'.");
-                                else if (!scope.TryGetCell(var_name, out _))
-                                    signal.reader.Stderr($"no variable named '{var_name}'.");
-                                else
+                                switch (cell.value)
                                 {
-                                    executor = new IncrementExecutor(signal, scope, var_name, code switch
-                                    {
-                                        UnaryExecutor.Operators.Add => IncrementExecutor.Operators.AddBefore,
-                                        UnaryExecutor.Operators.Sub => IncrementExecutor.Operators.SubBefore,
-                                        _ => 0,
-                                    });
-                                    return signal.reader.sig_error == null;
+                                    case bool b:
+                                        value_stack.Push(code switch
+                                        {
+                                            OP_CODES.NOT => !b,
+                                            _ => throw new Exception(),
+                                        });
+                                        break;
+
+                                    case int i:
+                                        value_stack.Push(code switch
+                                        {
+                                            OP_CODES.ADD => i,
+                                            OP_CODES.SUBSTRACT => -i,
+                                            _ => throw new Exception(),
+                                        });
+                                        break;
+
+                                    case float f:
+                                        value_stack.Push(code switch
+                                        {
+                                            OP_CODES.ADD => f,
+                                            OP_CODES.SUBSTRACT => -f,
+                                            _ => throw new Exception(),
+                                        });
+                                        break;
+
+                                    default:
+                                        throw new NotImplementedException();
                                 }
-                                signal.reader.read_i = read_old;
-                                executor = null;
-                                return false;
-                            }
-                        }
-                        break;
+                            };
+
+                        return true;
+                    }
+                    goto failure;
                 }
 
-                if (TryParseFactor(signal, scope, out executor))
-                {
-                    executor = new UnaryExecutor(signal, scope, executor, code);
+                if (TryParseFactor(signal, scope, type_stack, value_stack, out executor))
                     return true;
-                }
                 else
                 {
                     signal.reader.Stderr($"expected factor after '{unary_operator}'.");
@@ -58,9 +93,8 @@ namespace _ZOA_
                 }
             }
 
-            if (TryParseFactor(signal, scope, out executor))
-                return true;
-
+        failure:
+            signal.reader.read_i = read_old;
             executor = null;
             return false;
         }

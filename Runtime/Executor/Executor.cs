@@ -4,49 +4,78 @@ using System.Collections.Generic;
 
 namespace _ZOA_
 {
-    public abstract class Executor : Disposable
+    public sealed class Executor : Disposable
     {
-        public readonly MemScope mem_scope;
+        internal Action<Executor> action_SIG_EXE;
+        internal IEnumerator<ExecutionOutput> routine_SIG_EXE, routine_SIG_ALL;
 
-        protected Signal signal;
-        internal readonly Type output_type;
         internal bool isDone;
+        public Signal signal;
 
-        readonly IEnumerator<ExecutionOutput> routine;
+        //----------------------------------------------------------------------------------------------------------
 
-        public virtual string ToLog()
+        internal Executor()
         {
-            return $"EXE[{disposable_id}]";
+        }
+
+        internal Executor(in TypeStack type_stack, ValueStack value_stack, object literal)
+        {
+            type_stack.Push(literal.GetType());
+            action_SIG_EXE = exe => value_stack.Push(literal);
         }
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal Executor(in Signal signal, in MemScope mem_scope)
+        internal static IEnumerator<ExecutionOutput> EExecute_SIG_ALL(Executor executor, List<Executor> exe_stack)
         {
-            this.mem_scope = mem_scope;
-            if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
-                routine = EExecution();
+            for (int i = 0; i < exe_stack.Count; ++i)
+                yield return exe_stack[i].OnSignal(executor.signal);
         }
-
-        //----------------------------------------------------------------------------------------------------------
 
         internal ExecutionOutput OnSignal(in Signal signal)
         {
-            this.signal = signal;
-            if (!routine.MoveNext())
-                isDone = true;
-            this.signal = null;
-            return routine.Current;
-        }
+            if (action_SIG_EXE == null && routine_SIG_EXE == null && routine_SIG_ALL == null)
+                throw new Exception($"nothing assigned to executor");
 
-        internal abstract IEnumerator<ExecutionOutput> EExecution();
+            if (action_SIG_EXE != null)
+            {
+                this.signal = signal;
+                action_SIG_EXE(this);
+                this.signal = null;
+                return new(CMD_STATUS.RETURN);
+            }
+
+            if (routine_SIG_EXE != null)
+                if (!signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                    return new(CMD_STATUS.BLOCKED);
+                else
+                {
+                    this.signal = signal;
+                    if (!routine_SIG_EXE.MoveNext())
+                        isDone = true;
+                    this.signal = null;
+                    return routine_SIG_EXE.Current;
+                }
+
+            if (routine_SIG_ALL != null)
+            {
+                this.signal = signal;
+                if (!routine_SIG_ALL.MoveNext())
+                    isDone = true;
+                this.signal = null;
+                return routine_SIG_ALL.Current;
+            }
+
+            throw new Exception($"should not reach here (nothing assigned to executor");
+        }
 
         //----------------------------------------------------------------------------------------------------------
 
         protected override void OnDispose()
         {
             base.OnDispose();
-            routine?.Dispose();
+            routine_SIG_EXE?.Dispose();
+            routine_SIG_ALL?.Dispose();
         }
     }
 }

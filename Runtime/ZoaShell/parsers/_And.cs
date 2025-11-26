@@ -1,16 +1,29 @@
-﻿namespace _ZOA_
+﻿using System;
+
+namespace _ZOA_
 {
     partial class ZoaShell
     {
-        internal bool TryParseAnd(in Signal signal, in MemScope scope, out ExpressionExecutor executor)
+        internal bool TryParseAnd(
+            in Signal signal,
+            in MemScope scope,
+            in TypeStack type_stack,
+            in ValueStack value_stack,
+            out Executor executor
+        )
         {
-            if (TryParseComparison(signal, scope, out executor))
-                if (signal.reader.TryReadString_match_out(out string op_name, as_function_argument: false, lint: signal.reader.lint_theme.keywords, match: "and"))
+            if (TryParseComparison(signal, scope, type_stack, value_stack, out executor))
+                if (!signal.reader.TryReadString_match_out(out string op_name, as_function_argument: false, lint: signal.reader.lint_theme.keywords, match: "and"))
+                    return true;
+                else
                 {
-                    if (TryParseAnd(signal, scope, out var and2))
+                    Type type_a = type_stack.Pop();
+                    if (TryParseAnd(signal, scope, type_stack, value_stack, out Executor and2))
                     {
-                        executor = new PairExecutor(signal, scope, OP_FLAGS.and, executor, and2);
-                        return true;
+                        Type type_b = type_stack.Pop();
+                        var and1 = executor;
+                        if (TryParsePair(signal, type_stack, value_stack, OP_FLAGS.AND, and1, type_a, and2, type_b, out executor))
+                            return true;
                     }
                     else
                     {
@@ -18,8 +31,6 @@
                         return false;
                     }
                 }
-                else
-                    return true;
             return false;
         }
     }

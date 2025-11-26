@@ -5,32 +5,10 @@ using System.Linq;
 
 namespace _ZOA_
 {
-    public sealed class MemScope : Disposable
+    public sealed partial class MemScope : Disposable
     {
-        public class MemCell
-        {
-            public readonly Type _type;
-            public object _value;
-
-            //----------------------------------------------------------------------------------------------------------
-
-            public MemCell(in Type type, in object value = null)
-            {
-                _type = type;
-                _value = value;
-            }
-
-            //----------------------------------------------------------------------------------------------------------
-
-            public void AssignValue(in object value)
-            {
-                _value = value;
-            }
-        }
-
         readonly MemScope parent;
-
-        internal readonly Dictionary<string, MemCell> _variables = new(StringComparer.OrdinalIgnoreCase);
+        internal readonly Dictionary<string, MemCell> _vars = new(StringComparer.OrdinalIgnoreCase);
 
         //----------------------------------------------------------------------------------------------------------
 
@@ -44,13 +22,13 @@ namespace _ZOA_
         public IEnumerable<string> EVarNames()
         {
             if (parent != null)
-                return _variables.Keys.Union(parent.EVarNames());
-            return _variables.Keys;
+                return _vars.Keys.Union(parent.EVarNames());
+            return _vars.Keys;
         }
 
         public bool TryGetCell(in string name, out MemCell cell)
         {
-            if (_variables.TryGetValue(name, out cell))
+            if (_vars.TryGetValue(name, out cell))
                 return true;
             else if (parent != null)
                 return parent.TryGetCell(name, out cell);
@@ -62,7 +40,7 @@ namespace _ZOA_
         protected override void OnDispose()
         {
             base.OnDispose();
-            _variables.Clear();
+            _vars.Clear();
         }
     }
 }

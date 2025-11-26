@@ -4,20 +4,26 @@ namespace _ZOA_
 {
     partial class ZoaShell
     {
-        public bool TryParseFactor(in Signal signal, in MemScope scope, out ExpressionExecutor executor, in bool no_type_check = false)
+        public bool TryParseFactor(
+            in Signal signal,
+            MemScope scope,
+            in TypeStack type_stack,
+            ValueStack value_stack,
+            out Executor executor
+        )
         {
             if (signal.reader.sig_error == null)
                 if (signal.reader.TryReadChar_match('('))
                 {
                     signal.reader.LintOpeningBraquet();
-                    if (!TryParseExpression(signal, scope, false, out executor, type_check: false))
+                    if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out executor))
                     {
                         signal.reader.Stderr("expected expression inside factor parenthesis.");
                         goto failure;
                     }
                     else if (!signal.reader.TryReadChar_match(')', lint: signal.reader.CloseBraquetLint()))
                     {
-                        signal.reader.Stderr($"expected closing parenthesis ')' after factor {executor.ToLog()}.");
+                        signal.reader.Stderr($"expected closing parenthesis ')' after factor.");
                         --signal.reader.read_i;
                         goto failure;
                     }
@@ -26,23 +32,17 @@ namespace _ZOA_
                 }
 
             if (signal.reader.sig_error == null)
-                if (TryParseString(signal, scope, out StringExecutor exe_str))
-                {
-                    executor = exe_str;
+                if (TryParseString(signal, scope, type_stack, value_stack, out executor))
                     return true;
-                }
                 else if (signal.reader.sig_error != null)
                     goto failure;
 
             if (signal.reader.sig_error == null)
-                if (TryParseMethod(signal, scope, out ContractExecutor func_exe))
-                {
-                    executor = func_exe;
+                if (TryParseContract(signal, scope, type_stack, value_stack, out executor))
                     return true;
-                }
                 else if (signal.reader.sig_error != null)
                     goto failure;
-                else if (TryParseVariable(signal, scope, out _, out var var_exe))
+                else if (TryParseVariable(signal, scope, type_stack, value_stack, out _, out var var_exe))
                 {
                     executor = var_exe;
                     return true;
@@ -54,21 +54,21 @@ namespace _ZOA_
                     {
                         case "true":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
-                            executor = new LiteralExecutor(signal, scope, true);
+                            executor = new Executor(type_stack, value_stack, true);
                             return true;
 
                         case "false":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
-                            executor = new LiteralExecutor(signal, scope, false);
+                            executor = new Executor(type_stack, value_stack, false);
                             return true;
 
                         default:
                             if (arg[^1] == 'f' && Util.TryParseFloat(arg[..^1], out float _float))
-                                executor = new LiteralExecutor(signal, scope, _float);
+                                executor = new Executor(type_stack, value_stack, _float);
                             else if (int.TryParse(arg, out int _int))
-                                executor = new LiteralExecutor(signal, scope, _int);
+                                executor = new Executor(type_stack, value_stack, _int);
                             else if (Util.TryParseFloat(arg, out _float))
-                                executor = new LiteralExecutor(signal, scope, _float);
+                                executor = new Executor(type_stack, value_stack, _float);
                             else
                             {
                                 signal.reader.Stderr($"unrecognized literal : '{arg}'.");
