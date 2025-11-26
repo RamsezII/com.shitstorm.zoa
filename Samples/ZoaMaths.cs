@@ -11,11 +11,11 @@ namespace _ZOA_
             Contract.AddContract(new("echo",
                 parameters: (exe, sig, tstack) =>
                 {
-                    tstack.Pop();
+                    tstack.TryPop(out _);
                 },
                 action_SIG_EXE: static (exe, scope, vstack) =>
                 {
-                    object msg = vstack.Peek();
+                    object msg = vstack.Pop();
                     exe.signal.Stdout(msg, msg.ToString().SetColor(Colors.yellow));
                 }
             ));
