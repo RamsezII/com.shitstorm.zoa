@@ -8,7 +8,9 @@ namespace _ZOA_
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void OnBeforeSceneLoad()
         {
-            Contract.AddContract(new("echo",
+            Contract.AddContract(new(
+                name: "echo",
+                output_type: null,
                 parameters: new ZoaTypes(typeof(string)),
                 action_SIG_EXE: static (exe, scope, opts, prms) =>
                 {
@@ -17,7 +19,9 @@ namespace _ZOA_
                 }
             ));
 
-            Contract.AddContract(new("wait",
+            Contract.AddContract(new(
+                name: "wait",
+                output_type: null,
                 routine_SIG_EXE: static (exe, scope, opts, prms) =>
                 {
                     return ERoutine(exe);
