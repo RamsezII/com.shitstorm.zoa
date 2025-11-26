@@ -24,7 +24,8 @@ namespace _ZOA_
             T_object = typeof(object),
             T_bool = typeof(bool),
             T_int = typeof(int),
-            T_float = typeof(float);
+            T_float = typeof(float),
+            T_number = typeof(ZoaNumber);
 
         //----------------------------------------------------------------------------------------------------------
 
