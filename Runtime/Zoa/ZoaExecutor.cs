@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace _ZOA_
 {
-    public sealed class Executor : Disposable
+    public sealed class ZoaExecutor : Disposable
     {
-        internal Action<Executor> action_SIG_EXE;
+        internal Action<ZoaExecutor> action_SIG_EXE;
         internal IEnumerator<ExecutionOutput> routine_SIG_EXE, routine_SIG_ALL;
 
         internal bool isDone;
@@ -14,11 +14,11 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal Executor()
+        internal ZoaExecutor()
         {
         }
 
-        internal Executor(in TypeStack type_stack, ValueStack value_stack, object literal)
+        internal ZoaExecutor(in TypeStack type_stack, ValueStack value_stack, object literal)
         {
             type_stack.Push(literal.GetType());
             action_SIG_EXE = exe => value_stack.Push(literal);
@@ -26,7 +26,7 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal static IEnumerator<ExecutionOutput> EExecute_SIG_ALL(Executor executor, List<Executor> exe_stack)
+        internal static IEnumerator<ExecutionOutput> EExecute_SIG_ALL(ZoaExecutor executor, List<ZoaExecutor> exe_stack)
         {
             for (int i = 0; i < exe_stack.Count; ++i)
                 yield return exe_stack[i].OnSignal(executor.signal);

@@ -24,7 +24,7 @@ namespace _ZOA_
                 routine_SIG_EXE: static (exe, scope, vstack) =>
                 {
                     return ERoutine(exe);
-                    static IEnumerator<ExecutionOutput> ERoutine(Executor exe)
+                    static IEnumerator<ExecutionOutput> ERoutine(ZoaExecutor exe)
                     {
                         float timer = 0;
                         while (timer < 1)

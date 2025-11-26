@@ -12,7 +12,7 @@ namespace _ZOA_
             MemScope scope,
             in TypeStack type_stack,
             ValueStack value_stack,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             int read_old = signal.reader.read_i;

@@ -9,7 +9,7 @@ namespace _ZOA_
             in MemScope scope,
             in TypeStack type_stack,
             in ValueStack value_stack,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             if (TryParseComparison(signal, scope, type_stack, value_stack, out executor))
@@ -18,7 +18,7 @@ namespace _ZOA_
                 else
                 {
                     Type type_a = type_stack.Pop();
-                    if (TryParseAnd(signal, scope, type_stack, value_stack, out Executor and2))
+                    if (TryParseAnd(signal, scope, type_stack, value_stack, out ZoaExecutor and2))
                     {
                         Type type_b = type_stack.Pop();
                         var and1 = executor;

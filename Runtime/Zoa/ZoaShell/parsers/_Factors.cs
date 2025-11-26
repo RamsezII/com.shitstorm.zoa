@@ -9,7 +9,7 @@ namespace _ZOA_
             MemScope scope,
             in TypeStack type_stack,
             ValueStack value_stack,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             if (signal.reader.sig_error == null)
@@ -54,21 +54,21 @@ namespace _ZOA_
                     {
                         case "true":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
-                            executor = new Executor(type_stack, value_stack, true);
+                            executor = new ZoaExecutor(type_stack, value_stack, true);
                             return true;
 
                         case "false":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
-                            executor = new Executor(type_stack, value_stack, false);
+                            executor = new ZoaExecutor(type_stack, value_stack, false);
                             return true;
 
                         default:
                             if (arg[^1] == 'f' && Util.TryParseFloat(arg[..^1], out float _float))
-                                executor = new Executor(type_stack, value_stack, _float);
+                                executor = new ZoaExecutor(type_stack, value_stack, _float);
                             else if (int.TryParse(arg, out int _int))
-                                executor = new Executor(type_stack, value_stack, _int);
+                                executor = new ZoaExecutor(type_stack, value_stack, _int);
                             else if (Util.TryParseFloat(arg, out _float))
-                                executor = new Executor(type_stack, value_stack, _float);
+                                executor = new ZoaExecutor(type_stack, value_stack, _float);
                             else
                             {
                                 signal.reader.Stderr($"unrecognized literal : '{arg}'.");

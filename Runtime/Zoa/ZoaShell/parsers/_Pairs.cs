@@ -10,11 +10,11 @@ namespace _ZOA_
             in TypeStack type_stack,
             ValueStack value_stack,
             OP_FLAGS op,
-            Executor exe_a,
+            ZoaExecutor exe_a,
             Type type_a,
-            Executor exe_b,
+            ZoaExecutor exe_b,
             Type type_b,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             executor = null;

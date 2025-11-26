@@ -9,7 +9,7 @@ namespace _ZOA_
             in MemScope scope,
             in TypeStack type_stack,
             in ValueStack value_stack,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             if (TryParseAddSub(signal, scope, type_stack, value_stack, out executor))

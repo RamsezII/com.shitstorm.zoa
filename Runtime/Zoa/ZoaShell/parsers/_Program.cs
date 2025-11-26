@@ -5,7 +5,7 @@ namespace _ZOA_
 {
     partial class ZoaShell
     {
-        public bool TryParseProgram(in Signal signal, in MemScope scope, out bool background, out Executor executor)
+        public bool TryParseProgram(in Signal signal, in MemScope scope, out bool background, out ZoaExecutor executor)
         {
             executor = null;
             background = false;
@@ -18,9 +18,9 @@ namespace _ZOA_
             sub_scope._vars.Add("_assets_dir_", new(typeof(string), ArkPaths.instance.Value.dpath_assets));
 #endif
 
-            List<Executor> stack_blocks = new();
+            List<ZoaExecutor> stack_blocks = new();
 
-            while (TryParseBlock(signal, sub_scope, new TypeStack(), new ValueStack(), out Executor block_exe))
+            while (TryParseBlock(signal, sub_scope, new TypeStack(), new ValueStack(), out ZoaExecutor block_exe))
                 if (block_exe != null)
                     stack_blocks.Add(block_exe);
 
@@ -39,7 +39,7 @@ namespace _ZOA_
             {
                 executor = new()
                 {
-                    routine_SIG_ALL = Executor.EExecute_SIG_ALL(executor, stack_blocks),
+                    routine_SIG_ALL = ZoaExecutor.EExecute_SIG_ALL(executor, stack_blocks),
                 };
                 return true;
             }

@@ -11,7 +11,7 @@ namespace _ZOA_
             MemScope scope,
             in TypeStack type_stack,
             ValueStack value_stack,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             executor = null;
@@ -30,7 +30,7 @@ namespace _ZOA_
             signal.reader.cpl_start = Mathf.Min(read_old + 1, signal.reader.read_i - 1);
             signal.reader.cpl_end = signal.reader.read_i - 1;
 
-            List<Executor> exe_stack = new();
+            List<ZoaExecutor> exe_stack = new();
             string current_fragment = string.Empty;
             int start_i = signal.reader.read_i;
             bool flag_escape = false;
@@ -69,7 +69,7 @@ namespace _ZOA_
                                 StringBuilder sb = new();
                                 for (int i = 0; i < exe_stack.Count; ++i)
                                 {
-                                    Executor ex = exe_stack[i];
+                                    ZoaExecutor ex = exe_stack[i];
                                     while (!ex.isDone)
                                     {
                                         ExecutionOutput output = ex.OnSignal(exe.signal);
@@ -99,7 +99,7 @@ namespace _ZOA_
                                 current_fragment = string.Empty;
                             }
 
-                            if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out Executor inside_expr))
+                            if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out ZoaExecutor inside_expr))
                             {
                                 signal.reader.Stderr($"expected expression after '{{'.");
                                 return false;

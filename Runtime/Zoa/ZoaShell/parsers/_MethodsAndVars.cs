@@ -9,7 +9,7 @@ namespace _ZOA_
             MemScope scope,
             TypeStack type_stack,
             ValueStack value_stack,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             executor = null;
@@ -65,7 +65,7 @@ namespace _ZOA_
             in TypeStack type_stack,
             ValueStack value_stack,
             out string var_name,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             if (signal.reader.TryReadString_matches_out(out var_name, as_function_argument: false, lint: signal.reader.lint_theme.variables, matches: scope.EVarNames().ToArray()))

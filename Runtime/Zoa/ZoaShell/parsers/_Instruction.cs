@@ -7,7 +7,7 @@
             in MemScope scope,
             in TypeStack type_stack,
             in ValueStack value_stack,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             executor = null;

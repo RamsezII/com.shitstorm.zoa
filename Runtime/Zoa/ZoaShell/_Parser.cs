@@ -28,7 +28,7 @@
 
         public override void OnSignal(in Signal signal)
         {
-            if (TryParseBlock(signal, new MemScope(mem_scope), new TypeStack(), new ValueStack(), out Executor executor) && signal.reader.sig_error == null)
+            if (TryParseBlock(signal, new MemScope(mem_scope), new TypeStack(), new ValueStack(), out ZoaExecutor executor) && signal.reader.sig_error == null)
             {
                 if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
                 {

@@ -4,8 +4,8 @@ namespace _ZOA_
 {
     sealed partial class ZoaShell : Shell
     {
-        readonly List<Executor> background_executors = new();
-        Executor front_executor;
+        readonly List<ZoaExecutor> background_executors = new();
+        ZoaExecutor front_executor;
 
         //----------------------------------------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ namespace _ZOA_
             if (background_executors.Count > 0)
                 for (int i = 0; i < background_executors.Count; ++i)
                 {
-                    Executor exe = background_executors[i];
+                    ZoaExecutor exe = background_executors[i];
                     exe.OnSignal(signal);
 
                     if (!exe.isDone)

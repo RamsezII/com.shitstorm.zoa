@@ -4,7 +4,7 @@ namespace _ZOA_
 {
     partial class ZoaShell
     {
-        internal bool TryParseBlock(in Signal signal, in MemScope scope, in TypeStack type_stack, in ValueStack value_stack, out Executor executor)
+        internal bool TryParseBlock(in Signal signal, in MemScope scope, in TypeStack type_stack, in ValueStack value_stack, out ZoaExecutor executor)
         {
             executor = null;
 
@@ -13,9 +13,9 @@ namespace _ZOA_
                 signal.reader.LintOpeningBraquet();
 
                 var sub_scope = new MemScope(scope);
-                List<Executor> exe_stack = new();
+                List<ZoaExecutor> exe_stack = new();
 
-                while (TryParseBlock(signal, sub_scope, type_stack, value_stack, out Executor exe))
+                while (TryParseBlock(signal, sub_scope, type_stack, value_stack, out ZoaExecutor exe))
                     if (exe != null)
                         exe_stack.Add(exe);
 
@@ -26,7 +26,7 @@ namespace _ZOA_
                 {
                     executor = new()
                     {
-                        routine_SIG_ALL = Executor.EExecute_SIG_ALL(executor, exe_stack),
+                        routine_SIG_ALL = ZoaExecutor.EExecute_SIG_ALL(executor, exe_stack),
                     };
                     return true;
                 }

@@ -21,7 +21,7 @@ namespace _ZOA_
             in TypeStack type_stack,
             ValueStack value_stack,
             in bool read_as_argument,
-            out Executor executor
+            out ZoaExecutor executor
         )
         {
             if (!TryParseAssignation(signal, scope, type_stack, value_stack, out executor) && signal.reader.sig_error != null)
@@ -44,7 +44,7 @@ namespace _ZOA_
                 Type type_predicat = type_stack.Pop();
                 // check if is bool
 
-                if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out Executor exe_yes))
+                if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out ZoaExecutor exe_yes))
                     signal.reader.Stderr($"expected expression after ternary operator '?'");
                 else
                 {
@@ -52,7 +52,7 @@ namespace _ZOA_
 
                     if (!signal.reader.TryReadChar_match(':', lint: signal.reader.lint_theme.operators))
                         signal.reader.Stderr($"expected ternary operator delimiter ':'");
-                    else if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out Executor exe_no))
+                    else if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out ZoaExecutor exe_no))
                         signal.reader.Stderr($"expected second expression after ternary operator ':'");
                     else
                     {
@@ -65,8 +65,8 @@ namespace _ZOA_
                         else
                             signal.reader.sig_error ??= $"type inconsistancy between {type_yes} and {type_no}";
 
-                        Executor exe_cond = executor;
-                        Executor exe = executor = new();
+                        ZoaExecutor exe_cond = executor;
+                        ZoaExecutor exe = executor = new();
 
                         if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
                         {
@@ -83,7 +83,7 @@ namespace _ZOA_
                                         yield return output;
                                 }
 
-                                Executor block = cond_b ? exe_yes : exe_no;
+                                ZoaExecutor block = cond_b ? exe_yes : exe_no;
                                 if (block != null)
                                     while (!block.isDone)
                                     {

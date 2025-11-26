@@ -7,10 +7,10 @@ namespace _ZOA_
     public sealed class Contract
     {
         public readonly string name;
-        internal readonly Action<Executor, Signal, TypeStack> options;
-        internal readonly Action<Executor, Signal, TypeStack> parameters;
-        internal readonly Action<Executor, MemScope, ValueStack> action_SIG_EXE;
-        internal readonly Func<Executor, MemScope, ValueStack, IEnumerator<ExecutionOutput>> routine_SIG_EXE, routine_SIG_ALL;
+        internal readonly Action<ZoaExecutor, Signal, TypeStack> options;
+        internal readonly Action<ZoaExecutor, Signal, TypeStack> parameters;
+        internal readonly Action<ZoaExecutor, MemScope, ValueStack> action_SIG_EXE;
+        internal readonly Func<ZoaExecutor, MemScope, ValueStack, IEnumerator<ExecutionOutput>> routine_SIG_EXE, routine_SIG_ALL;
 
         internal static readonly Dictionary<string, Contract> contracts = new(StringComparer.OrdinalIgnoreCase);
 
@@ -33,11 +33,11 @@ namespace _ZOA_
 
         public Contract(
             in string name,
-            in Action<Executor, Signal, TypeStack> options = null,
-            in Action<Executor, Signal, TypeStack> parameters = null,
-            in Action<Executor, MemScope, ValueStack> action_SIG_EXE = null,
-            in Func<Executor, MemScope, ValueStack, IEnumerator<ExecutionOutput>> routine_SIG_EXE = null,
-            in Func<Executor, MemScope, ValueStack, IEnumerator<ExecutionOutput>> routine_SIG_ALL = null
+            in Action<ZoaExecutor, Signal, TypeStack> options = null,
+            in Action<ZoaExecutor, Signal, TypeStack> parameters = null,
+            in Action<ZoaExecutor, MemScope, ValueStack> action_SIG_EXE = null,
+            in Func<ZoaExecutor, MemScope, ValueStack, IEnumerator<ExecutionOutput>> routine_SIG_EXE = null,
+            in Func<ZoaExecutor, MemScope, ValueStack, IEnumerator<ExecutionOutput>> routine_SIG_ALL = null
             )
         {
             this.name = name;
