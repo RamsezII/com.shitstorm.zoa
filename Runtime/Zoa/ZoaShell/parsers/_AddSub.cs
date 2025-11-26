@@ -9,10 +9,11 @@ namespace _ZOA_
             in MemScope scope,
             in TypeStack type_stack,
             in ValueStack value_stack,
+            in Type expected_type,
             out ZoaExecutor executor
         )
         {
-            if (TryParseTerm(signal, scope, type_stack, value_stack, out executor))
+            if (TryParseTerm(signal, scope, type_stack, value_stack, expected_type, out executor))
             {
                 int read_old = signal.reader.read_i;
                 if (!signal.reader.TryReadChar_matches_out(out char op_symbol, true, "+-"))
@@ -33,11 +34,11 @@ namespace _ZOA_
                         _ => 0,
                     };
 
-                    if (TryParseAddSub(signal, scope, type_stack, value_stack, out var term2))
+                    if (TryParseAddSub(signal, scope, type_stack, value_stack, expected_type, out var term2))
                     {
                         Type type_b = type_stack.Pop();
                         var term1 = executor;
-                        if (TryParsePair(signal, type_stack, value_stack, code, term1, type_a, term2, type_b, out executor))
+                        if (TryParsePair(signal, type_stack, value_stack, expected_type, code, term1, type_a, term2, type_b, out executor))
                             return true;
                     }
                     else

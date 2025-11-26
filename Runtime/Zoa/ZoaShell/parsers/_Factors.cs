@@ -1,4 +1,5 @@
 ﻿using _COBRA_;
+using System;
 
 namespace _ZOA_
 {
@@ -9,6 +10,7 @@ namespace _ZOA_
             MemScope scope,
             in TypeStack type_stack,
             ValueStack value_stack,
+            in Type expected_type,
             out ZoaExecutor executor
         )
         {
@@ -38,11 +40,11 @@ namespace _ZOA_
                     goto failure;
 
             if (signal.reader.sig_error == null)
-                if (TryParseContract(signal, scope, type_stack, value_stack, out executor))
+                if (TryParseContract(signal, scope, type_stack, value_stack, expected_type, out executor))
                     return true;
                 else if (signal.reader.sig_error != null)
                     goto failure;
-                else if (TryParseVariable(signal, scope, type_stack, value_stack, out _, out var var_exe))
+                else if (TryParseVariable(signal, scope, type_stack, value_stack, expected_type, out _, out var var_exe))
                 {
                     executor = var_exe;
                     return true;

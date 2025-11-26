@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace _ZOA_
@@ -9,6 +10,7 @@ namespace _ZOA_
             MemScope scope,
             in TypeStack type_stack,
             ValueStack value_stack,
+            in Type expected_type,
             out string var_name,
             out ZoaExecutor executor
         )

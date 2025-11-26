@@ -20,7 +20,11 @@ namespace _ZOA_
         public readonly MemScope mem_scope = new();
         public Action<object, string> on_output;
 
-        protected static readonly Type T_object = typeof(object);
+        public static readonly Type
+            T_object = typeof(object),
+            T_bool = typeof(bool),
+            T_int = typeof(int),
+            T_float = typeof(float);
 
         //----------------------------------------------------------------------------------------------------------
 

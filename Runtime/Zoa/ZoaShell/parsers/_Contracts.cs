@@ -11,6 +11,7 @@ namespace _ZOA_
             MemScope scope,
             in TypeStack type_stack,
             ValueStack value_stack,
+            in Type expected_type,
             out ZoaExecutor executor
         )
         {

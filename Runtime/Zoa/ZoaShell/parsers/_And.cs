@@ -22,7 +22,7 @@ namespace _ZOA_
                     {
                         Type type_b = type_stack.Pop();
                         var and1 = executor;
-                        if (TryParsePair(signal, type_stack, value_stack, OP_FLAGS.AND, and1, type_a, and2, type_b, out executor))
+                        if (TryParsePair(signal, type_stack, value_stack, T_bool, OP_FLAGS.AND, and1, type_a, and2, type_b, out executor))
                             return true;
                     }
                     else

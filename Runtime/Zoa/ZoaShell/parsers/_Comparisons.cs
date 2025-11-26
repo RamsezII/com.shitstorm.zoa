@@ -12,7 +12,7 @@ namespace _ZOA_
             out ZoaExecutor executor
         )
         {
-            if (TryParseAddSub(signal, scope, type_stack, value_stack, out executor))
+            if (TryParseAddSub(signal, scope, type_stack, value_stack, T_object, out executor))
             {
                 if (!signal.reader.TryReadChar_matches_out(out char op_char, true, "!<>="))
                     return true;
@@ -34,11 +34,11 @@ namespace _ZOA_
 
                     signal.reader.LintToThisPosition(signal.reader.lint_theme.operators, true);
 
-                    if (TryParseAddSub(signal, scope, type_stack, value_stack, out var addsub2))
+                    if (TryParseAddSub(signal, scope, type_stack, value_stack, T_object, out var addsub2))
                     {
                         Type type_b = type_stack.Pop();
                         var addsub1 = executor;
-                        if (TryParsePair(signal, type_stack, value_stack, code, addsub1, type_a, addsub2, type_b, out executor))
+                        if (TryParsePair(signal, type_stack, value_stack, T_object, code, addsub1, type_a, addsub2, type_b, out executor))
                             return true;
                     }
                     else

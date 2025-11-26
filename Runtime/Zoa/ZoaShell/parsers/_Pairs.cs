@@ -9,6 +9,7 @@ namespace _ZOA_
             in Signal signal,
             in TypeStack type_stack,
             ValueStack value_stack,
+            in Type expected_type,
             OP_FLAGS op,
             ZoaExecutor exe_a,
             Type type_a,
@@ -19,9 +20,9 @@ namespace _ZOA_
         {
             executor = null;
 
-            if (!TryPair(signal, type_stack, typeof(bool)))
-                if (!TryPair(signal, type_stack, typeof(int)))
-                    if (!TryPair(signal, type_stack, typeof(float)))
+            if (!TryPair(signal, type_stack, T_bool))
+                if (!TryPair(signal, type_stack, T_int))
+                    if (!TryPair(signal, type_stack, T_float))
                     {
                         signal.reader.sig_error ??= $"type inconsistency between {type_a} and {type_b}";
                         return false;

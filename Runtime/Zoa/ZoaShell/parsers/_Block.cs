@@ -4,7 +4,13 @@ namespace _ZOA_
 {
     partial class ZoaShell
     {
-        internal bool TryParseBlock(in Signal signal, in MemScope scope, in TypeStack type_stack, in ValueStack value_stack, out ZoaExecutor executor)
+        internal bool TryParseBlock(
+            in Signal signal, 
+            in MemScope scope, 
+            in TypeStack type_stack, 
+            in ValueStack value_stack, 
+            out ZoaExecutor executor
+        )
         {
             executor = null;
 

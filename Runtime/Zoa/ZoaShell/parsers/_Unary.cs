@@ -9,6 +9,7 @@ namespace _ZOA_
             MemScope scope,
             in TypeStack type_stack,
             ValueStack value_stack,
+            in Type expected_type,
             out ZoaExecutor executor
         )
         {
@@ -16,7 +17,7 @@ namespace _ZOA_
 
             if (!signal.reader.TryReadChar_matches_out(out char unary_operator, true, "+-!"))
             {
-                if (TryParseFactor(signal, scope, type_stack, value_stack, out executor))
+                if (TryParseFactor(signal, scope, type_stack, value_stack, expected_type, out executor))
                     return true;
             }
             else
@@ -84,7 +85,7 @@ namespace _ZOA_
                     goto failure;
                 }
 
-                if (TryParseFactor(signal, scope, type_stack, value_stack, out executor))
+                if (TryParseFactor(signal, scope, type_stack, value_stack, expected_type, out executor))
                     return true;
                 else
                 {

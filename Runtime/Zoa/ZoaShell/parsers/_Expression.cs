@@ -25,7 +25,7 @@ namespace _ZOA_
             out ZoaExecutor executor
         )
         {
-            if (!TryParseAssignation(signal, scope, type_stack, value_stack, out executor) && signal.reader.sig_error != null)
+            if (!TryParseAssignation(signal, scope, type_stack, value_stack, expected_type, out executor) && signal.reader.sig_error != null)
                 return false;
 
             if (executor == null && !TryParseOr(signal, scope, type_stack, value_stack, out executor))
@@ -74,26 +74,15 @@ namespace _ZOA_
                             executor.routine_SIG_ALL = ERoutine();
                             IEnumerator<ExecutionOutput> ERoutine()
                             {
-                                bool cond_b = false;
                                 while (!exe_cond.isDone)
-                                {
-                                    ExecutionOutput output = exe_cond.OnSignal(exe.signal);
-                                    if (exe_cond.isDone)
-                                        cond_b = value_stack.Pop().ToBool();
-                                    else
-                                        yield return output;
-                                }
+                                    yield return exe_cond.OnSignal(exe.signal);
+
+                                bool cond_b = value_stack.Pop().ToBool();
 
                                 ZoaExecutor block = cond_b ? exe_yes : exe_no;
                                 if (block != null)
                                     while (!block.isDone)
-                                    {
-                                        ExecutionOutput output = block.OnSignal(exe.signal);
-                                        if (block.isDone)
-                                            yield return new(CMD_STATUS.RETURN, progress: 1, error: output.error);
-                                        else
-                                            yield return output;
-                                    }
+                                        yield return block.OnSignal(exe.signal);
                             }
                         }
                     }
