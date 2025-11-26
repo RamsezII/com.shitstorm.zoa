@@ -20,6 +20,8 @@ namespace _ZOA_
         public readonly MemScope mem_scope = new();
         public Action<object, string> on_output;
 
+        protected static readonly Type T_object = typeof(object);
+
         //----------------------------------------------------------------------------------------------------------
 
         public void Init()

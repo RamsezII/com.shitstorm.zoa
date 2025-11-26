@@ -21,6 +21,7 @@ namespace _ZOA_
             in TypeStack type_stack,
             ValueStack value_stack,
             in bool read_as_argument,
+            in Type expected_type,
             out ZoaExecutor executor
         )
         {
@@ -44,7 +45,7 @@ namespace _ZOA_
                 Type type_predicat = type_stack.Pop();
                 // check if is bool
 
-                if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out ZoaExecutor exe_yes))
+                if (!TryParseExpression(signal, scope, type_stack, value_stack, false, typeof(object), out ZoaExecutor exe_yes))
                     signal.reader.Stderr($"expected expression after ternary operator '?'");
                 else
                 {
@@ -52,7 +53,7 @@ namespace _ZOA_
 
                     if (!signal.reader.TryReadChar_match(':', lint: signal.reader.lint_theme.operators))
                         signal.reader.Stderr($"expected ternary operator delimiter ':'");
-                    else if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out ZoaExecutor exe_no))
+                    else if (!TryParseExpression(signal, scope, type_stack, value_stack, false, typeof(object), out ZoaExecutor exe_no))
                         signal.reader.Stderr($"expected second expression after ternary operator ':'");
                     else
                     {

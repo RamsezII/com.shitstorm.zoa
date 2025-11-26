@@ -99,7 +99,7 @@ namespace _ZOA_
                                 current_fragment = string.Empty;
                             }
 
-                            if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out ZoaExecutor inside_expr))
+                            if (!TryParseExpression(signal, scope, type_stack, value_stack, false, T_object, out ZoaExecutor inside_expr))
                             {
                                 signal.reader.Stderr($"expected expression after '{{'.");
                                 return false;

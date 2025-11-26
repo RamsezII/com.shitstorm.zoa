@@ -16,7 +16,7 @@ namespace _ZOA_
                 if (signal.reader.TryReadChar_match('('))
                 {
                     signal.reader.LintOpeningBraquet();
-                    if (!TryParseExpression(signal, scope, type_stack, value_stack, false, out executor))
+                    if (!TryParseExpression(signal, scope, type_stack, value_stack, false, T_object, out executor))
                     {
                         signal.reader.Stderr("expected expression inside factor parenthesis.");
                         goto failure;

@@ -9,19 +9,16 @@ namespace _ZOA_
         static void OnBeforeSceneLoad()
         {
             Contract.AddContract(new("echo",
-                parameters: (exe, sig, tstack) =>
+                parameters: new ZoaTypes(typeof(string)),
+                action_SIG_EXE: static (exe, scope, opts, prms) =>
                 {
-                    tstack.TryPop(out _);
-                },
-                action_SIG_EXE: static (exe, scope, vstack) =>
-                {
-                    object msg = vstack.Pop();
+                    object msg = prms[0];
                     exe.signal.Stdout(msg, msg.ToString().SetColor(Colors.yellow));
                 }
             ));
 
             Contract.AddContract(new("wait",
-                routine_SIG_EXE: static (exe, scope, vstack) =>
+                routine_SIG_EXE: static (exe, scope, opts, prms) =>
                 {
                     return ERoutine(exe);
                     static IEnumerator<ExecutionOutput> ERoutine(ZoaExecutor exe)

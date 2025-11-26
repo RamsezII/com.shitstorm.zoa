@@ -60,7 +60,7 @@ namespace _ZOA_
                             _ => OP_CODES._none_,
                         };
 
-                        if (TryParseExpression(signal, scope, type_stack, value_stack, false, out var exe_expr))
+                        if (TryParseExpression(signal, scope, type_stack, value_stack, false, T_object, out ZoaExecutor exe_expr))
                         {
                             Type expr_type = type_stack.Pop();
                             executor = new();

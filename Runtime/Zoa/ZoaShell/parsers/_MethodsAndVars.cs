@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace _ZOA_
@@ -7,7 +8,7 @@ namespace _ZOA_
         internal bool TryParseContract(
             in Signal signal,
             MemScope scope,
-            TypeStack type_stack,
+            in TypeStack type_stack,
             ValueStack value_stack,
             out ZoaExecutor executor
         )
@@ -18,9 +19,22 @@ namespace _ZOA_
                     signal.reader.Stderr($"no contract named '{cont_name}'.");
                 else
                 {
-                    executor = new();
+                    bool is_exe = signal.flags.HasFlag(SIG_FLAGS.EXEC);
 
-                    contract.options?.Invoke(executor, signal, type_stack);
+                    executor = new();
+                    Dictionary<string, ZoaExecutor> exe_opts = null;
+
+                    if (contract.options != null)
+                    {
+                        if (is_exe)
+                            exe_opts = new();
+
+                        foreach (var pair in contract.options)
+                            if (pair.Value != null)
+                                if (TryParseExpression(signal, scope, type_stack, value_stack, false, pair.Value, out ZoaExecutor exe_opt))
+                                    if (is_exe)
+                                        exe_opts.Add(pair.Key.long_name, exe_opt);
+                    }
 
                     bool expects_parenthesis = signal.reader.strict_syntax;
                     bool found_parenthesis = signal.reader.TryReadChar_match('(');
@@ -34,7 +48,17 @@ namespace _ZOA_
                         return false;
                     }
 
-                    contract.parameters?.Invoke(executor, signal, type_stack);
+                    List<ZoaExecutor> exe_prms = null;
+                    if (contract.parameters != null)
+                    {
+                        if (is_exe)
+                            exe_prms = new();
+
+                        foreach (var prm in contract.parameters)
+                            if (TryParseExpression(signal, scope, type_stack, value_stack, true, prm, out ZoaExecutor exe_prm))
+                                if (is_exe)
+                                    exe_prms.Add(exe_prm);
+                    }
 
                     if (signal.reader.sig_error != null)
                         return false;
@@ -47,9 +71,77 @@ namespace _ZOA_
 
                     if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
                     {
-                        executor.action_SIG_EXE = exe => contract.action_SIG_EXE(exe, scope, value_stack);
-                        executor.routine_SIG_EXE = contract.routine_SIG_EXE(executor, scope, value_stack);
-                        executor.routine_SIG_ALL = contract.routine_SIG_ALL(executor, scope, value_stack);
+                        var exe = executor;
+                        executor.routine_SIG_ALL = EExecute_SIG_ALL();
+                        IEnumerator<ExecutionOutput> EExecute_SIG_ALL()
+                        {
+                            Dictionary<string, object> opts = null;
+                            if (exe_opts != null)
+                            {
+                                opts = new(exe_opts.Count);
+                                foreach (var pair in exe_opts)
+                                {
+                                    ZoaExecutor ex = pair.Value;
+                                    while (!ex.isDone)
+                                    {
+                                        ExecutionOutput output = ex.OnSignal(exe.signal);
+                                        yield return output;
+                                    }
+                                    opts.Add(pair.Key, ex.output);
+                                }
+                            }
+
+                            List<object> prms = null;
+                            if (exe_prms != null)
+                            {
+                                prms = new(exe_prms.Count);
+                                for (int i = 0; i < exe_prms.Count; i++)
+                                {
+                                    ZoaExecutor ex = exe_prms[i];
+                                    while (!ex.isDone)
+                                    {
+                                        ExecutionOutput output = ex.OnSignal(exe.signal);
+                                        yield return output;
+                                    }
+                                    prms[i] = ex.output;
+                                }
+                            }
+
+                            if (contract.action_SIG_EXE != null)
+                                if (!exe.signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                                    yield return new(CMD_STATUS.BLOCKED);
+                                else
+                                {
+                                    contract.action_SIG_EXE(exe, scope, opts, prms);
+                                    yield return new(CMD_STATUS.RETURN);
+                                }
+
+                            if (contract.routine_SIG_EXE != null)
+                                if (!exe.signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                                    yield return new(CMD_STATUS.BLOCKED);
+                                else
+                                {
+                                    using var routine = contract.routine_SIG_EXE(exe, scope, opts, prms);
+                                    bool go = true;
+                                    while (go)
+                                        if (exe.signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                                            if (routine.MoveNext())
+                                                yield return routine.Current;
+                                            else
+                                                go = false;
+                                        else
+                                            yield return new(CMD_STATUS.BLOCKED);
+                                }
+
+                            if (contract.routine_SIG_ALL != null)
+                            {
+                                using var routine = contract.routine_SIG_ALL(exe, scope, opts, prms);
+                                while (routine.MoveNext())
+                                    yield return routine.Current;
+                            }
+
+                            exe.isDone = true;
+                        }
                     }
 
                     return true;
@@ -61,7 +153,7 @@ namespace _ZOA_
 
         internal bool TryParseVariable(
             in Signal signal,
-            in MemScope scope,
+            MemScope scope,
             in TypeStack type_stack,
             ValueStack value_stack,
             out string var_name,
