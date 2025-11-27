@@ -13,12 +13,12 @@ namespace _ZOA_
             in ExecutionStack exec_stack)
         {
             if (signal.is_exec)
-                exec_stack.Push(new Executor(expected_type)
+                exec_stack.Push(new Executor("pair operator", expected_type)
                 {
                     action_SIG_EXE = exe =>
                     {
-                        object a = exe_a.output_data;
-                        object b = exe_b.output_data;
+                        object a = exe_a.output;
+                        object b = exe_b.output;
                         object c = null;
 
                         if (a is bool ab && b is bool bb)
@@ -61,7 +61,7 @@ namespace _ZOA_
                                 _ => throw new NotImplementedException(),
                             };
 
-                        exe.output_data = c;
+                        exe.output = c;
                     }
                 });
 

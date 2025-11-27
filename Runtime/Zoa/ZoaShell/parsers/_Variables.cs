@@ -29,9 +29,9 @@ namespace _ZOA_
                     signal.reader.LintToThisPosition(signal.reader.lint_theme.variables, true);
 
                     if (signal.is_exec)
-                        exec_stack.Push(new(var_cell.type)
+                        exec_stack.Push(new("variable", var_cell.type)
                         {
-                            action_SIG_EXE = exe => exe.output_data = var_cell.value,
+                            action_SIG_EXE = exe => exe.output = var_cell.value,
                         });
 
                     return true;

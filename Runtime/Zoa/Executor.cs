@@ -9,21 +9,26 @@ namespace _ZOA_
         internal Action<Executor> action_SIG_EXE;
         internal IEnumerator<ExecutionOutput> routine_SIG_EXE, routine_SIG_ALL;
 
-        internal readonly Type output_type;
-        internal object output_data;
+        public readonly string name;
+        internal readonly Type type;
+        internal object output;
         internal bool isDone;
         public Signal signal;
 
+        public string DisplayName => $"ex {{ {nameof(name)}: {name}, {nameof(type)}: {type}, {nameof(output)}: {output} }}";
+        public override string ToString() => DisplayName;
+
         //----------------------------------------------------------------------------------------------------------
 
-        internal Executor(in Type output_type)
+        internal Executor(in string name, in Type type)
         {
-            this.output_type = output_type;
+            this.name = name;
+            this.type = type;
         }
 
-        internal static Executor Literal(object value) => new(value.GetType())
+        internal static Executor Literal(object value) => new($"lit[{value}]", value.GetType())
         {
-            action_SIG_EXE = exe => exe.output_data = value,
+            action_SIG_EXE = exe => exe.output = value,
         };
 
         //----------------------------------------------------------------------------------------------------------
@@ -66,11 +71,11 @@ namespace _ZOA_
             }
 
             if (isDone)
-                if (output_type != null)
-                    if (output_data == null)
-                        output = new(CMD_STATUS.ERROR, error: $"no output, expected {output_type}");
-                    else if (output_type != output_data.GetType())
-                        output = new(CMD_STATUS.ERROR, error: $"wrong output, expected {output_type}, got {output_data} ({output_data.GetType()})");
+                if (type != null)
+                    if (this.output == null)
+                        output = new(CMD_STATUS.ERROR, error: $"no output, expected {type}");
+                    else if (type != this.output.GetType())
+                        output = new(CMD_STATUS.ERROR, error: $"wrong output, expected {type}, got {this.output} ({this.output.GetType()})");
 
             return output;
         }

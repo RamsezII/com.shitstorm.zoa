@@ -67,14 +67,14 @@ namespace _ZOA_
                         if (TryParseExpression(signal, scope, false, var_cell.type, exec_stack))
                         {
                             Executor expr_exe = exec_stack.Peek();
-                            Type expr_type = expr_exe.output_type;
+                            Type expr_type = expr_exe.type;
 
                             if (signal.is_exec)
-                                exec_stack.Push(new(var_cell.type)
+                                exec_stack.Push(new("assignation", var_cell.type)
                                 {
                                     action_SIG_EXE = exe =>
                                     {
-                                        object value = expr_exe.output_data;
+                                        object value = expr_exe.output;
 
                                         if (code != OP_CODES.ASSIGN)
                                         {

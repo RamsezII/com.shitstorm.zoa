@@ -58,13 +58,13 @@ namespace _ZOA_
                 {
                     var factor = exec_stack.Peek();
 
-                    Executor executor = new(expected_type);
+                    Executor executor = new("unary", expected_type);
                     exec_stack.Push(executor);
 
                     if (signal.is_exec)
                         executor.action_SIG_EXE = exe =>
                         {
-                            exe.output_data = factor.output_data switch
+                            exe.output = factor.output switch
                             {
                                 bool b => code switch
                                 {

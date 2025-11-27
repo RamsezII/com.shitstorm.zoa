@@ -19,7 +19,7 @@ namespace _ZOA_
 
             List<Executor> stack_blocks = new();
 
-            while (TryParseBlock(signal, sub_scope, exec_stack)) ;
+            while (signal.reader.HasNext() && TryParseBlock(signal, sub_scope, exec_stack)) ;
 
             if (signal.reader.sig_error != null)
                 goto failure;

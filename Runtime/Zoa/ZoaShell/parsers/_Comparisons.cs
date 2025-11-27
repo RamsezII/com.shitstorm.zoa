@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace _ZOA_
+﻿namespace _ZOA_
 {
     partial class ZoaShell
     {
@@ -10,7 +8,7 @@ namespace _ZOA_
             in ExecutionStack exec_stack
         )
         {
-            if (TryParseAddSub(signal, scope, T_object, exec_stack))
+            if (TryParseAddSub(signal, scope, null, exec_stack))
             {
                 if (!signal.reader.TryReadChar_matches_out(out char op_char, true, "!<>="))
                     return true;

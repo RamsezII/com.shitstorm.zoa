@@ -26,22 +26,19 @@ namespace _ZOA_
                 }
                 else
                 {
-                    Dictionary<string, Executor> options1 = null;
-
+                    Dictionary<string, Executor> exe_opts = null;
                     if (contract.options != null)
                     {
-                        if (signal.is_exec)
-                            options1 = new();
-
+                        exe_opts = new();
                         foreach (var pair in contract.options)
                             if (pair.Value != null)
-                                if (!TryParseExpression(signal, scope, false, pair.Value, exec_stack))
+                                if (TryParseExpression(signal, scope, false, pair.Value, exec_stack))
+                                    exe_opts.Add(pair.Key.long_name, exec_stack.Peek());
+                                else
                                 {
                                     signal.reader.sig_error ??= $"could not parse expression for option {(pair.Key.short_name != '\0' ? $"\"-{pair.Key.short_name}\"" : string.Empty)}/\"--{pair.Key.long_name}\"";
                                     goto failure;
                                 }
-                                else if (signal.is_exec)
-                                    options1.Add(pair.Key.long_name, exec_stack.Peek());
                     }
 
                     bool expects_parenthesis = signal.reader.strict_syntax;
@@ -56,22 +53,20 @@ namespace _ZOA_
                         goto failure;
                     }
 
-                    List<Executor> params1 = null;
+                    List<Executor> exe_prms = null;
                     if (contract.parameters != null)
                     {
-                        if (signal.is_exec)
-                            params1 = new();
-
+                        exe_prms = new();
                         for (int i = 0; i < contract.parameters._list.Count; i++)
                         {
                             Type arg_type = contract.parameters._list[i];
-                            if (!TryParseExpression(signal, scope, true, arg_type, exec_stack))
+                            if (TryParseExpression(signal, scope, true, arg_type, exec_stack))
+                                exe_prms.Add(exec_stack.Peek());
+                            else
                             {
                                 signal.reader.sig_error ??= $"could not parse argument[{i}]";
                                 goto failure;
                             }
-                            else if (signal.is_exec)
-                                params1.Add(exec_stack.Peek());
                         }
                     }
 
@@ -84,40 +79,42 @@ namespace _ZOA_
                         goto failure;
                     }
 
-                    if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                    var executor = new Executor(contract.name, contract.output_type);
+                    if (signal.is_exec)
                     {
-                        Dictionary<string, object> options2 = null;
-                        if (options1 != null)
-                        {
-                            options2 = new(options1.Count);
-                            foreach (var pair in options1)
-                                if (pair.Value == null)
-                                    options2.Add(pair.Key, null);
-                                else
-                                    options2.Add(pair.Key, pair.Value.output_data);
-                        }
+                        Dictionary<string, object> vals_opts = null;
+                        List<object> vals_prms = null;
 
-                        List<object> params2 = null;
-                        if (params1 != null)
+                        executor.action_SIG_EXE = exe =>
                         {
-                            params2 = new(params1.Count);
-                            for (int i = 0; i < params1.Count; i++)
-                                params2[i] = params1[i].output_data;
-                        }
+                            if (exe_opts != null)
+                            {
+                                vals_opts = new(exe_opts.Count);
+                                foreach (var pair in exe_opts)
+                                    if (pair.Value == null)
+                                        vals_opts.Add(pair.Key, null);
+                                    else
+                                        vals_opts.Add(pair.Key, pair.Value.output);
+                            }
 
-                        var executor = new Executor(contract.output_type);
+                            if (exe_prms != null)
+                            {
+                                vals_prms = new(exe_prms.Count);
+                                for (int i = 0; i < exe_prms.Count; i++)
+                                    vals_prms.Add(exe_prms[i].output);
+                            }
+                        };
 
                         if (contract.action_SIG_EXE != null)
-                            executor.action_SIG_EXE = exe => contract.action_SIG_EXE(exe, scope, options2, params2);
+                            executor.action_SIG_EXE += exe => contract.action_SIG_EXE(exe, scope, vals_opts, vals_prms);
 
                         if (contract.routine_SIG_EXE != null)
-                            executor.routine_SIG_EXE = contract.routine_SIG_EXE(executor, scope, options2, params2);
+                            executor.routine_SIG_EXE = contract.routine_SIG_EXE(executor, scope, vals_opts, vals_prms);
 
                         if (contract.routine_SIG_ALL != null)
-                            executor.routine_SIG_ALL = contract.routine_SIG_ALL(executor, scope, options2, params2);
-
-                        exec_stack.Push(executor);
+                            executor.routine_SIG_ALL = contract.routine_SIG_ALL(executor, scope, vals_opts, vals_prms);
                     }
+                    exec_stack.Push(executor);
 
                     return true;
                 }

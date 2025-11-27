@@ -54,7 +54,7 @@ namespace _ZOA_
                             if (signal.is_exec)
                                 exec_stack.Push(Executor.Literal(true));
                             else
-                                exec_stack.Push(new Executor(T_bool));
+                                exec_stack.Push(new Executor("bool", T_bool));
                             return true;
 
                         case "false":
@@ -62,7 +62,7 @@ namespace _ZOA_
                             if (signal.is_exec)
                                 exec_stack.Push(Executor.Literal(false));
                             else
-                                exec_stack.Push(new Executor(T_bool));
+                                exec_stack.Push(new Executor("condition", T_bool));
                             return true;
 
                         default:
@@ -71,21 +71,21 @@ namespace _ZOA_
                                 if (signal.is_exec)
                                     exec_stack.Push(Executor.Literal(_float));
                                 else
-                                    exec_stack.Push(new Executor(T_number));
+                                    exec_stack.Push(new Executor("number", T_number));
                             }
                             else if (int.TryParse(arg, out int _int))
                             {
                                 if (signal.is_exec)
                                     exec_stack.Push(Executor.Literal(_int));
                                 else
-                                    exec_stack.Push(new Executor(T_int));
+                                    exec_stack.Push(new Executor("int", T_int));
                             }
                             else if (Util.TryParseFloat(arg, out _float))
                             {
                                 if (signal.is_exec)
                                     exec_stack.Push(Executor.Literal(_float));
                                 else
-                                    exec_stack.Push(new Executor(T_float));
+                                    exec_stack.Push(new Executor("float", T_float));
                             }
                             else
                             {

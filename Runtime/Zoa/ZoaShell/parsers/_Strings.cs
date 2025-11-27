@@ -57,20 +57,20 @@ namespace _ZOA_
                             {
                                 Executor ex = signal.is_exec
                                     ? Executor.Literal(current_fragment)
-                                    : new(typeof(string));
+                                    : new("string", typeof(string));
                                 exec_stack.Push(ex);
                                 exe_list.Add(ex);
                             }
 
                             // execute stack of fragments and expressions
-                            Executor executor = new(typeof(string));
+                            Executor executor = new("string", typeof(string));
                             if (is_exe)
                                 executor.action_SIG_EXE = exe =>
                                 {
                                     StringBuilder sb = new();
                                     for (int i = 0; i < exe_list.Count; ++i)
-                                        sb.Append(exe_list[i].output_data);
-                                    exe.output_data = sb.ToString();
+                                        sb.Append(exe_list[i].output);
+                                    exe.output = sb.ToString();
                                 };
                         }
                         return true;
@@ -85,7 +85,7 @@ namespace _ZOA_
                             {
                                 Executor ex = signal.is_exec
                                     ? Executor.Literal(current_fragment)
-                                    : new(typeof(string));
+                                    : new("string", typeof(string));
                                 exec_stack.Push(ex);
                                 exe_list.Add(ex);
                                 current_fragment = string.Empty;

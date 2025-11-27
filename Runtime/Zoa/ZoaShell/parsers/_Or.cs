@@ -10,9 +10,9 @@
         {
             if (TryParseAnd(signal, scope, exec_stack))
             {
-                Executor or1 = exec_stack.Peek();
                 if (signal.reader.TryReadString_match_out(out string op_name, as_function_argument: false, lint: signal.reader.lint_theme.keywords, match: "or"))
                 {
+                    Executor or1 = exec_stack.Peek();
                     if (TryParseOr(signal, scope, exec_stack))
                     {
                         Executor or2 = exec_stack.Peek();

@@ -65,27 +65,27 @@ namespace _ZOA_
                         else if (signal.is_exec)
                         {
                             Executor exe_no = exec_stack.Peek();
-                            Executor exe_before = new(expected_type);
+                            Executor exe_before = new("from condition to ternary", expected_type);
 
-                            exec_stack.Push(new Executor(expected_type)
+                            exec_stack.Push(new Executor("ternary", expected_type)
                             {
                                 action_SIG_EXE = exe =>
                                 {
-                                    bool cond_b = exe_cond.output_data.ToBool();
+                                    bool cond_b = exe_cond.output.ToBool();
 
                                     var exec_stack_final = cond_b ? exec_stack_yes : exec_stack_no;
 
                                     exec_stack._stack.AddRange(exec_stack_final._stack);
 
-                                    exec_stack.Push(new(expected_type)
+                                    exec_stack.Push(new("ternary output", expected_type)
                                     {
                                         action_SIG_EXE = exe =>
                                         {
-                                            exe.output_data = exec_stack_final.Peek().output_data;
+                                            exe.output = exec_stack_final.Peek().output;
                                         },
                                     });
 
-                                    Executor exe_after = new(expected_type);
+                                    Executor exe_after = new("ternary result", expected_type);
                                 }
                             });
                         }
