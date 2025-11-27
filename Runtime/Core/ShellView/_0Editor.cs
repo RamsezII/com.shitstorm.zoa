@@ -9,7 +9,8 @@ namespace _ZOA_
         private void OnValidate() => _OnValidate();
         protected virtual void _OnValidate()
         {
-            lint_theme.RebuildDictionary();
+            if (didStart)
+                lint_theme.RebuildDictionary();
         }
     }
 }

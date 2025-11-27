@@ -12,10 +12,10 @@ namespace _ZOA_
                 name: "echo",
                 output_type: null,
                 parameters: new ZoaTypes(Shell.T_object),
-                action_SIG_EXE: static (exe, scope, opts, prms) =>
+                action_SIG_EXE: static (exe, scope, opts, args) =>
                 {
-                    object msg = prms[0];
-                    exe.signal.Stdout(msg, msg.ToString().SetColor(Colors.yellow));
+                    object msg = args[0];
+                    exe.signal.Stdout(msg, null);
                 }
             ));
 

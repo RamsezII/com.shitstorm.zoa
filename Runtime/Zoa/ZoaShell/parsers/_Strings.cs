@@ -72,6 +72,7 @@ namespace _ZOA_
                                         sb.Append(exe_list[i].output);
                                     exe.output = sb.ToString();
                                 };
+                            exec_stack.Push(executor);
                         }
                         return true;
 
