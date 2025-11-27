@@ -11,7 +11,7 @@ namespace _ZOA_
             Contract.AddContract(new(
                 name: "echo",
                 output_type: null,
-                parameters: new ZoaTypes(typeof(string)),
+                parameters: new ZoaTypes(Shell.T_object),
                 action_SIG_EXE: static (exe, scope, opts, prms) =>
                 {
                     object msg = prms[0];

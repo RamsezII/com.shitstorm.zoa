@@ -16,7 +16,7 @@ namespace _ZOA_
         internal bool OnSignal(in Signal signal, out ExecutionOutput output)
         {
             if (!is_empty)
-                for (int i = _stack.Count - 1; i >= 0; i--)
+                for (int i = 0; i < _stack.Count; ++i)
                     if (!_stack[i].isDone)
                     {
                         output = _stack[i].OnSignal(signal);

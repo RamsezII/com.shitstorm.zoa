@@ -28,7 +28,10 @@ namespace _ZOA_
 
         internal static Executor Literal(object value) => new($"lit[{value}]", value.GetType())
         {
-            action_SIG_EXE = exe => exe.output = value,
+            action_SIG_EXE = exe =>
+            {
+                exe.output = value;
+            },
         };
 
         //----------------------------------------------------------------------------------------------------------

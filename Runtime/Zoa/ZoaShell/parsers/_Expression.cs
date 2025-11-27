@@ -65,9 +65,9 @@ namespace _ZOA_
                         else if (signal.is_exec)
                         {
                             Executor exe_no = exec_stack.Peek();
-                            Executor exe_before = new("from condition to ternary", expected_type);
+                            Executor exe_tern_eval = null;
 
-                            exec_stack.Push(new Executor("ternary", expected_type)
+                            exe_tern_eval = new("ternary evaluator", expected_type)
                             {
                                 action_SIG_EXE = exe =>
                                 {
@@ -75,19 +75,21 @@ namespace _ZOA_
 
                                     var exec_stack_final = cond_b ? exec_stack_yes : exec_stack_no;
 
-                                    exec_stack._stack.AddRange(exec_stack_final._stack);
+                                    int insert_index = exec_stack._stack.IndexOf(exe_tern_eval);
 
-                                    exec_stack.Push(new("ternary output", expected_type)
+                                    exec_stack._stack.InsertRange(insert_index, exec_stack_final._stack);
+
+                                    Executor exe_tern_output = new("ternary output", expected_type)
                                     {
                                         action_SIG_EXE = exe =>
                                         {
                                             exe.output = exec_stack_final.Peek().output;
                                         },
-                                    });
-
-                                    Executor exe_after = new("ternary result", expected_type);
+                                    };
+                                    exec_stack._stack.Insert(insert_index, exe_tern_output);
                                 }
-                            });
+                            };
+                            exec_stack.Push(exe_tern_eval);
                         }
                     }
                 }
