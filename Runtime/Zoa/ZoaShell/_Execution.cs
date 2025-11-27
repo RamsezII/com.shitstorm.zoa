@@ -4,47 +4,29 @@ namespace _ZOA_
 {
     sealed partial class ZoaShell : Shell
     {
-        readonly List<ZoaExecutor> background_executors = new();
-        ZoaExecutor front_executor;
+        readonly List<ExecutionStack> background_executions = new();
+        ExecutionStack front_execution = new();
 
         //----------------------------------------------------------------------------------------------------------
 
         protected override void OnTick()
         {
-            Signal signal = new(SIG_FLAGS.EXEC, null, on_output);
-            OnBackgroundSignal(signal);
-            OnFrontSignal(signal);
-        }
-
-        void OnBackgroundSignal(in Signal signal)
-        {
-            if (background_executors.Count > 0)
-                for (int i = 0; i < background_executors.Count; ++i)
+            if (background_executions.Count > 0)
+                for (int i = 0; i < background_executions.Count; i++)
                 {
-                    ZoaExecutor exe = background_executors[i];
-                    exe.OnSignal(signal);
-
-                    if (!exe.isDone)
-                    {
-                        background_executors.RemoveAt(i--);
-                        exe.Dispose();
-                        return;
-                    }
+                    var stack = background_executions[i];
+                    Signal sig1 = new(SIG_FLAGS.EXEC, null, on_output);
+                    if (!stack.OnSignal(sig1, out _))
+                        background_executions.RemoveAt(i--);
                 }
-        }
 
-        void OnFrontSignal(in Signal signal)
-        {
-            if (front_executor != null)
+            if (front_execution._stack.Count > 0)
             {
-                ExecutionOutput output = front_executor.OnSignal(signal);
-                status.Value = output.status;
-
-                if (front_executor.isDone)
-                {
-                    front_executor.Dispose();
-                    front_executor = null;
-                }
+                Signal sig2 = new(SIG_FLAGS.EXEC, null, on_output);
+                if (front_execution.OnSignal(sig2, out var output))
+                    status.Value = output.status;
+                else
+                    status.Value = CMD_STATUS.WAIT_FOR_STDIN;
             }
             else
                 status.Value = CMD_STATUS.WAIT_FOR_STDIN;

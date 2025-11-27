@@ -26,13 +26,9 @@ namespace _ZOA_
         [UnityEditor.MenuItem("Assets/" + nameof(_ZOA_) + "/" + nameof(_Test))]
         static void _Test()
         {
-            ZoaNumber a = 5f;
+            ZoaNumber a = 4.5f;
             ZoaNumber b = 5;
-            float c = a + b;
-            Debug.Log(a == b);
-            Debug.Log(a == 5);
-            Debug.Log(a == 5f);
-            Debug.Log(c);
+            Debug.Log(a < b);
         }
 #endif
 
@@ -44,6 +40,10 @@ namespace _ZOA_
         public static ZoaNumber operator /(in ZoaNumber a, in ZoaNumber b) => Operation(a, b, OP_FLAGS.DIVIDE);
         public static bool operator ==(in ZoaNumber a, in ZoaNumber b) => a.Equals(b);
         public static bool operator !=(in ZoaNumber a, in ZoaNumber b) => !a.Equals(b);
+        public static bool operator <(in ZoaNumber a, in ZoaNumber b) => (float)a < (float)b;
+        public static bool operator <=(in ZoaNumber a, in ZoaNumber b) => (float)a <= (float)b;
+        public static bool operator >(in ZoaNumber a, in ZoaNumber b) => (float)a > (float)b;
+        public static bool operator >=(in ZoaNumber a, in ZoaNumber b) => (float)a >= (float)b;
 
         public static implicit operator ZoaNumber(in int v) => new(v);
         public static implicit operator ZoaNumber(in float v) => new(v);

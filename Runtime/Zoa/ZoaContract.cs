@@ -10,8 +10,8 @@ namespace _ZOA_
         public readonly Type output_type;
         internal readonly Dictionary<(char short_name, string long_name), Type> options;
         internal readonly ZoaList<Type> parameters;
-        internal readonly Action<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>> action_SIG_EXE;
-        internal readonly Func<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_EXE, routine_SIG_ALL;
+        internal readonly Action<Executor, MemScope, Dictionary<string, object>, List<object>> action_SIG_EXE;
+        internal readonly Func<Executor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_EXE, routine_SIG_ALL;
 
         internal static readonly Dictionary<string, Contract> contracts = new(StringComparer.OrdinalIgnoreCase);
 
@@ -37,9 +37,9 @@ namespace _ZOA_
             in Type output_type,
             in Dictionary<(char, string), Type> options = null,
             in ZoaList<Type> parameters = null,
-            in Action<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>> action_SIG_EXE = null,
-            in Func<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_EXE = null,
-            in Func<ZoaExecutor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_ALL = null
+            in Action<Executor, MemScope, Dictionary<string, object>, List<object>> action_SIG_EXE = null,
+            in Func<Executor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_EXE = null,
+            in Func<Executor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_ALL = null
             )
         {
             this.name = name;

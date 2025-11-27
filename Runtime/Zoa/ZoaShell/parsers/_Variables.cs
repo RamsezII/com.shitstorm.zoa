@@ -8,31 +8,36 @@ namespace _ZOA_
         internal bool TryParseVariable(
             in Signal signal,
             MemScope scope,
-            in TypeStack type_stack,
-            ValueStack value_stack,
             in Type expected_type,
             out string var_name,
-            out ZoaExecutor executor
+            in ExecutionStack exec_stack
         )
         {
             if (signal.reader.TryReadString_matches_out(out var_name, as_function_argument: false, lint: signal.reader.lint_theme.variables, matches: scope.EVarNames().ToArray()))
-                if (!scope.TryGetCell(var_name, out MemCell cell))
-                    signal.reader.Stderr($"no variable named '{var_name}'.");
+                if (!scope.TryGetCell(var_name, out MemCell var_cell))
+                {
+                    signal.reader.sig_error ??= $"no variable named '{var_name}'.";
+                    goto failure;
+                }
+                else if (expected_type != null && !var_cell.type.IsOfType(expected_type))
+                {
+                    signal.reader.sig_error ??= $"expted variable of type {expected_type}, got {var_cell.type}";
+                    goto failure;
+                }
                 else
                 {
                     signal.reader.LintToThisPosition(signal.reader.lint_theme.variables, true);
 
-                    type_stack.Push(cell.type);
-                    executor = new()
-                    {
-                        action_SIG_EXE = exe => value_stack.Push(cell.value),
-                    };
+                    if (signal.is_exec)
+                        exec_stack.Push(new(var_cell.type)
+                        {
+                            action_SIG_EXE = exe => exe.output_data = var_cell.value,
+                        });
 
-                    if (signal.reader.sig_error == null)
-                        return true;
+                    return true;
                 }
 
-            executor = null;
+            failure:
             return false;
         }
     }

@@ -7,13 +7,11 @@ namespace _ZOA_
         internal bool TryParseAddSub(
             in Signal signal,
             in MemScope scope,
-            in TypeStack type_stack,
-            in ValueStack value_stack,
             in Type expected_type,
-            out ZoaExecutor executor
+            in ExecutionStack exec_stack
         )
         {
-            if (TryParseTerm(signal, scope, type_stack, value_stack, expected_type, out executor))
+            if (TryParseTerm(signal, scope, expected_type, exec_stack))
             {
                 int read_old = signal.reader.read_i;
                 if (!signal.reader.TryReadChar_matches_out(out char op_symbol, true, "+-"))
@@ -25,8 +23,6 @@ namespace _ZOA_
                 {
                     signal.reader.LintToThisPosition(signal.reader.lint_theme.operators, true);
 
-                    Type type_a = type_stack.Pop();
-
                     OP_FLAGS code = op_symbol switch
                     {
                         '+' => OP_FLAGS.ADD,
@@ -34,17 +30,20 @@ namespace _ZOA_
                         _ => 0,
                     };
 
-                    if (TryParseAddSub(signal, scope, type_stack, value_stack, expected_type, out var term2))
+                    var term1 = exec_stack.Peek();
+
+                    if (TryParseAddSub(signal, scope, expected_type, exec_stack))
                     {
-                        Type type_b = type_stack.Pop();
-                        var term1 = executor;
-                        if (TryParsePair(signal, type_stack, value_stack, expected_type, code, term1, type_a, term2, type_b, out executor))
+                        var term2 = exec_stack.Peek();
+                        if (TryParsePair(signal, expected_type, code, term1, term2, exec_stack))
                             return true;
                     }
                     else
                         signal.reader.Stderr($"expected expression after '{op_symbol}' operator.");
                 }
             }
+
+        failure:
             return false;
         }
     }

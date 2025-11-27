@@ -28,16 +28,17 @@
 
         public override void OnSignal(in Signal signal)
         {
-            if (TryParseBlock(signal, new MemScope(mem_scope), new TypeStack(), new ValueStack(), out ZoaExecutor executor) && signal.reader.sig_error == null)
-            {
-                if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
-                {
-                    front_executor = executor;
-                    OnFrontSignal(signal);
-                }
-            }
-            else
+            ExecutionStack exec_stack = new();
+            if (!TryParseProgram(signal, new MemScope(mem_scope), exec_stack, out bool background))
                 signal.reader.sig_error ??= $"could not parse {nameof(signal)}";
+            else if (signal.is_exec)
+                if (background)
+                    background_executions.Add(exec_stack);
+                else
+                {
+                    front_execution = exec_stack;
+                    status.Value = CMD_STATUS.BLOCKED;
+                }
         }
     }
 }

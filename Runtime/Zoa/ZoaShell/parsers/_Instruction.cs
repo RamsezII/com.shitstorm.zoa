@@ -5,12 +5,9 @@
         internal bool TryParseInstruction(
             in Signal signal,
             in MemScope scope,
-            in TypeStack type_stack,
-            in ValueStack value_stack,
-            out ZoaExecutor executor
+            in ExecutionStack exec_stack
         )
         {
-            executor = null;
         skipped_comments:
             if (signal.reader.TryReadChar_match(';', lint: signal.reader.lint_theme.command_separators))
                 return true;
@@ -19,10 +16,9 @@
                 signal.reader.SkipUntil('\n');
                 goto skipped_comments;
             }
-            else if (TryParseExpression(signal, scope, type_stack, value_stack, false, null, out executor))
+            else if (TryParseExpression(signal, scope, false, null, exec_stack))
                 return true;
 
-            executor = null;
             return false;
         }
     }

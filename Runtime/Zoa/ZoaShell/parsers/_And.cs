@@ -1,28 +1,23 @@
-﻿using System;
-
-namespace _ZOA_
+﻿namespace _ZOA_
 {
     partial class ZoaShell
     {
         internal bool TryParseAnd(
             in Signal signal,
             in MemScope scope,
-            in TypeStack type_stack,
-            in ValueStack value_stack,
-            out ZoaExecutor executor
+            in ExecutionStack exec_stack
         )
         {
-            if (TryParseComparison(signal, scope, type_stack, value_stack, out executor))
+            if (TryParseComparison(signal, scope, exec_stack))
                 if (!signal.reader.TryReadString_match_out(out string op_name, as_function_argument: false, lint: signal.reader.lint_theme.keywords, match: "and"))
                     return true;
                 else
                 {
-                    Type type_a = type_stack.Pop();
-                    if (TryParseAnd(signal, scope, type_stack, value_stack, out ZoaExecutor and2))
+                    Executor and1 = exec_stack.Peek();
+                    if (TryParseAnd(signal, scope, exec_stack))
                     {
-                        Type type_b = type_stack.Pop();
-                        var and1 = executor;
-                        if (TryParsePair(signal, type_stack, value_stack, T_bool, OP_FLAGS.AND, and1, type_a, and2, type_b, out executor))
+                        Executor and2 = exec_stack.Peek();
+                        if (TryParsePair(signal, T_bool, OP_FLAGS.AND, and1, and2, exec_stack))
                             return true;
                     }
                     else

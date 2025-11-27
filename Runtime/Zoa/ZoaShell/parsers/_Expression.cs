@@ -18,17 +18,16 @@ namespace _ZOA_
         public bool TryParseExpression(
             in Signal signal,
             MemScope scope,
-            in TypeStack type_stack,
-            ValueStack value_stack,
             in bool read_as_argument,
-            in Type expected_type,
-            out ZoaExecutor executor
+            Type expected_type,
+            ExecutionStack exec_stack
         )
         {
-            if (!TryParseAssignation(signal, scope, type_stack, value_stack, expected_type, out executor) && signal.reader.sig_error != null)
+            int exe_count_bf_assign = exec_stack._stack.Count;
+            if (!TryParseAssignation(signal, scope, expected_type, exec_stack) && signal.reader.sig_error != null)
                 return false;
 
-            if (executor == null && !TryParseOr(signal, scope, type_stack, value_stack, out executor))
+            if (exe_count_bf_assign == exec_stack._stack.Count && !TryParseOr(signal, scope, exec_stack))
                 return false;
 
             if (read_as_argument)
@@ -44,48 +43,51 @@ namespace _ZOA_
             else
             {
                 // cond output
-                Type type_predicat = type_stack.Pop();
+                Executor exe_cond = exec_stack.Peek();
                 // check if is bool
 
-                if (!TryParseExpression(signal, scope, type_stack, value_stack, false, typeof(object), out ZoaExecutor exe_yes))
+                ExecutionStack exec_stack_yes = new();
+
+                if (!TryParseExpression(signal, scope, false, typeof(object), exec_stack_yes))
                     signal.reader.Stderr($"expected expression after ternary operator '?'");
                 else
                 {
-                    Type type_yes = type_stack.Pop();
+                    Executor exe_yes = exec_stack.Peek();
 
                     if (!signal.reader.TryReadChar_match(':', lint: signal.reader.lint_theme.operators))
                         signal.reader.Stderr($"expected ternary operator delimiter ':'");
-                    else if (!TryParseExpression(signal, scope, type_stack, value_stack, false, typeof(object), out ZoaExecutor exe_no))
-                        signal.reader.Stderr($"expected second expression after ternary operator ':'");
                     else
                     {
-                        Type type_no = type_stack.Pop();
+                        ExecutionStack exec_stack_no = new();
 
-                        if (type_yes.IsOfType(type_no))
-                            type_stack.Push(type_no);
-                        else if (type_no.IsOfType(type_yes))
-                            type_stack.Push(type_yes);
-                        else
-                            signal.reader.sig_error ??= $"type inconsistancy between {type_yes} and {type_no}";
-
-                        ZoaExecutor exe_cond = executor;
-                        ZoaExecutor exe = executor = new();
-
-                        if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                        if (!TryParseExpression(signal, scope, false, typeof(object), exec_stack_no))
+                            signal.reader.Stderr($"expected second expression after ternary operator ':'");
+                        else if (signal.is_exec)
                         {
-                            executor.routine_SIG_ALL = ERoutine();
-                            IEnumerator<ExecutionOutput> ERoutine()
+                            Executor exe_no = exec_stack.Peek();
+                            Executor exe_before = new(expected_type);
+
+                            exec_stack.Push(new Executor(expected_type)
                             {
-                                while (!exe_cond.isDone)
-                                    yield return exe_cond.OnSignal(exe.signal);
+                                action_SIG_EXE = exe =>
+                                {
+                                    bool cond_b = exe_cond.output_data.ToBool();
 
-                                bool cond_b = value_stack.Pop().ToBool();
+                                    var exec_stack_final = cond_b ? exec_stack_yes : exec_stack_no;
 
-                                ZoaExecutor block = cond_b ? exe_yes : exe_no;
-                                if (block != null)
-                                    while (!block.isDone)
-                                        yield return block.OnSignal(exe.signal);
-                            }
+                                    exec_stack._stack.AddRange(exec_stack_final._stack);
+
+                                    exec_stack.Push(new(expected_type)
+                                    {
+                                        action_SIG_EXE = exe =>
+                                        {
+                                            exe.output_data = exec_stack_final.Peek().output_data;
+                                        },
+                                    });
+
+                                    Executor exe_after = new(expected_type);
+                                }
+                            });
                         }
                     }
                 }

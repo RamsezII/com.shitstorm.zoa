@@ -30,6 +30,7 @@ namespace _ZOA_
         public readonly CodeReader reader;
         public readonly Action<object, string> Stdout;
         public string exe_error;
+        public bool is_exec;
 
         //----------------------------------------------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ namespace _ZOA_
         {
             this.flags = flags;
             this.reader = reader;
+            is_exec = flags.HasFlag(SIG_FLAGS.EXEC);
             Stdout = on_stdout ?? ((data, lint) => Debug.Log(lint ?? data.ToString()));
         }
     }

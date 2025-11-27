@@ -10,10 +10,8 @@ namespace _ZOA_
         internal bool TryParseAssignation(
             in Signal signal,
             MemScope scope,
-            in TypeStack type_stack,
-            ValueStack value_stack,
             in Type expected_type,
-            out ZoaExecutor executor
+            in ExecutionStack exec_stack
         )
         {
             int read_old = signal.reader.read_i;
@@ -24,9 +22,14 @@ namespace _ZOA_
                 lint: signal.reader.lint_theme.variables,
                 matches: scope.EVarNames().ToArray())
             )
-                if (!scope.TryGetCell(var_name, out MemCell cell))
+                if (!scope.TryGetCell(var_name, out MemCell var_cell))
                 {
-                    signal.reader.Stderr($"no variable named '{var_name}'.");
+                    signal.reader.sig_error ??= $"no variable named '{var_name}'.";
+                    goto failure;
+                }
+                else if (expected_type != null && expected_type != var_cell.type)
+                {
+                    signal.reader.sig_error ??= $"expected assignation of type {expected_type}, got {var_cell.type}";
                     goto failure;
                 }
                 else
@@ -61,59 +64,61 @@ namespace _ZOA_
                             _ => OP_CODES._none_,
                         };
 
-                        if (TryParseExpression(signal, scope, type_stack, value_stack, false, T_object, out ZoaExecutor exe_expr))
+                        if (TryParseExpression(signal, scope, false, var_cell.type, exec_stack))
                         {
-                            Type expr_type = type_stack.Pop();
-                            executor = new();
+                            Executor expr_exe = exec_stack.Peek();
+                            Type expr_type = expr_exe.output_type;
 
-                            if (signal.flags.HasFlag(SIG_FLAGS.EXEC))
-                                executor.action_SIG_EXE = exe =>
+                            if (signal.is_exec)
+                                exec_stack.Push(new(var_cell.type)
                                 {
-                                    object expr_val = value_stack.Pop();
-
-                                    if (code != OP_CODES.ASSIGN)
+                                    action_SIG_EXE = exe =>
                                     {
-                                        if (cell.value is bool var_b && expr_val is bool expr_b)
-                                            expr_val = code switch
-                                            {
-                                                OP_CODES.AND => var_b && expr_b,
-                                                OP_CODES.OR => var_b || expr_b,
-                                                OP_CODES.XOR => var_b != expr_b,
-                                                _ => throw new NotSupportedException(),
-                                            };
-                                        else if (cell.value is int var_i && expr_val is int expr_i)
-                                            expr_val = code switch
-                                            {
-                                                OP_CODES.ADD => var_i + expr_i,
-                                                OP_CODES.SUBSTRACT => var_i - expr_i,
-                                                OP_CODES.MULTIPLY => var_i * expr_i,
-                                                OP_CODES.DIVIDE => var_i / expr_i,
-                                                OP_CODES.MODULO => var_i % expr_i,
-                                                OP_CODES.AND => var_i & expr_i,
-                                                OP_CODES.OR => var_i | expr_i,
-                                                _ => throw new NotSupportedException(),
-                                            };
-                                        else if (cell.value is float var_f && expr_val is float expr_f)
-                                            expr_val = code switch
-                                            {
-                                                OP_CODES.ADD => var_f + expr_f,
-                                                OP_CODES.SUBSTRACT => var_f - expr_f,
-                                                OP_CODES.MULTIPLY => var_f * expr_f,
-                                                OP_CODES.DIVIDE => var_f / expr_f,
-                                                OP_CODES.MODULO => var_f % expr_f,
-                                                _ => throw new NotSupportedException(),
-                                            };
-                                        else if (cell.value is string var_s)
-                                            expr_val = code switch
-                                            {
-                                                OP_CODES.ADD => var_s + expr_val,
-                                                _ => throw new NotSupportedException(),
-                                            };
-                                    }
+                                        object value = expr_exe.output_data;
 
-                                    cell.value = expr_val;
-                                    value_stack.Push(expr_val);
-                                };
+                                        if (code != OP_CODES.ASSIGN)
+                                        {
+                                            if (var_cell.value is bool var_b && value is bool expr_b)
+                                                value = code switch
+                                                {
+                                                    OP_CODES.AND => var_b && expr_b,
+                                                    OP_CODES.OR => var_b || expr_b,
+                                                    OP_CODES.XOR => var_b != expr_b,
+                                                    _ => throw new NotSupportedException(),
+                                                };
+                                            else if (var_cell.value is int var_i && value is int expr_i)
+                                                value = code switch
+                                                {
+                                                    OP_CODES.ADD => var_i + expr_i,
+                                                    OP_CODES.SUBSTRACT => var_i - expr_i,
+                                                    OP_CODES.MULTIPLY => var_i * expr_i,
+                                                    OP_CODES.DIVIDE => var_i / expr_i,
+                                                    OP_CODES.MODULO => var_i % expr_i,
+                                                    OP_CODES.AND => var_i & expr_i,
+                                                    OP_CODES.OR => var_i | expr_i,
+                                                    _ => throw new NotSupportedException(),
+                                                };
+                                            else if (var_cell.value is float var_f && value is float expr_f)
+                                                value = code switch
+                                                {
+                                                    OP_CODES.ADD => var_f + expr_f,
+                                                    OP_CODES.SUBSTRACT => var_f - expr_f,
+                                                    OP_CODES.MULTIPLY => var_f * expr_f,
+                                                    OP_CODES.DIVIDE => var_f / expr_f,
+                                                    OP_CODES.MODULO => var_f % expr_f,
+                                                    _ => throw new NotSupportedException(),
+                                                };
+                                            else if (var_cell.value is string var_s)
+                                                value = code switch
+                                                {
+                                                    OP_CODES.ADD => var_s + value,
+                                                    _ => throw new NotSupportedException(),
+                                                };
+                                        }
+
+                                        var_cell.value = value;
+                                    }
+                                });
 
                             return true;
                         }
@@ -127,7 +132,6 @@ namespace _ZOA_
 
             failure:
             signal.reader.read_i = read_old;
-            executor = null;
             return false;
         }
     }

@@ -8,17 +8,15 @@ namespace _ZOA_
         public bool TryParseFactor(
             in Signal signal,
             MemScope scope,
-            in TypeStack type_stack,
-            ValueStack value_stack,
             in Type expected_type,
-            out ZoaExecutor executor
+            in ExecutionStack exec_stack
         )
         {
             if (signal.reader.sig_error == null)
                 if (signal.reader.TryReadChar_match('('))
                 {
                     signal.reader.LintOpeningBraquet();
-                    if (!TryParseExpression(signal, scope, type_stack, value_stack, false, T_object, out executor))
+                    if (!TryParseExpression(signal, scope, false, T_object, exec_stack))
                     {
                         signal.reader.Stderr("expected expression inside factor parenthesis.");
                         goto failure;
@@ -34,21 +32,18 @@ namespace _ZOA_
                 }
 
             if (signal.reader.sig_error == null)
-                if (TryParseString(signal, scope, type_stack, value_stack, out executor))
+                if (TryParseString(signal, scope, exec_stack))
                     return true;
                 else if (signal.reader.sig_error != null)
                     goto failure;
 
             if (signal.reader.sig_error == null)
-                if (TryParseContract(signal, scope, type_stack, value_stack, expected_type, out executor))
+                if (TryParseContract(signal, scope, expected_type, exec_stack))
                     return true;
                 else if (signal.reader.sig_error != null)
                     goto failure;
-                else if (TryParseVariable(signal, scope, type_stack, value_stack, expected_type, out _, out var var_exe))
-                {
-                    executor = var_exe;
+                else if (TryParseVariable(signal, scope, expected_type, out _, exec_stack))
                     return true;
-                }
                 else if (signal.reader.sig_error != null)
                     goto failure;
                 else if (signal.reader.TryReadArgument(out string arg, lint: signal.reader.lint_theme.fallback_default, as_function_argument: false, stoppers: CodeReader._stoppers_factors_))
@@ -56,21 +51,42 @@ namespace _ZOA_
                     {
                         case "true":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
-                            executor = new ZoaExecutor(type_stack, value_stack, true);
+                            if (signal.is_exec)
+                                exec_stack.Push(Executor.Literal(true));
+                            else
+                                exec_stack.Push(new Executor(T_bool));
                             return true;
 
                         case "false":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
-                            executor = new ZoaExecutor(type_stack, value_stack, false);
+                            if (signal.is_exec)
+                                exec_stack.Push(Executor.Literal(false));
+                            else
+                                exec_stack.Push(new Executor(T_bool));
                             return true;
 
                         default:
                             if (arg[^1] == 'f' && Util.TryParseFloat(arg[..^1], out float _float))
-                                executor = new ZoaExecutor(type_stack, value_stack, _float);
+                            {
+                                if (signal.is_exec)
+                                    exec_stack.Push(Executor.Literal(_float));
+                                else
+                                    exec_stack.Push(new Executor(T_number));
+                            }
                             else if (int.TryParse(arg, out int _int))
-                                executor = new ZoaExecutor(type_stack, value_stack, _int);
+                            {
+                                if (signal.is_exec)
+                                    exec_stack.Push(Executor.Literal(_int));
+                                else
+                                    exec_stack.Push(new Executor(T_int));
+                            }
                             else if (Util.TryParseFloat(arg, out _float))
-                                executor = new ZoaExecutor(type_stack, value_stack, _float);
+                            {
+                                if (signal.is_exec)
+                                    exec_stack.Push(Executor.Literal(_float));
+                                else
+                                    exec_stack.Push(new Executor(T_float));
+                            }
                             else
                             {
                                 signal.reader.Stderr($"unrecognized literal : '{arg}'.");
@@ -81,7 +97,6 @@ namespace _ZOA_
                     }
 
                 failure:
-            executor = null;
             return false;
         }
     }

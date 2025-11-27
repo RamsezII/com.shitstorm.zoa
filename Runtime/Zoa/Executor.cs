@@ -4,38 +4,36 @@ using System.Collections.Generic;
 
 namespace _ZOA_
 {
-    public sealed class ZoaExecutor : Disposable
+    public sealed class Executor : Disposable
     {
-        internal Action<ZoaExecutor> action_SIG_EXE;
+        internal Action<Executor> action_SIG_EXE;
         internal IEnumerator<ExecutionOutput> routine_SIG_EXE, routine_SIG_ALL;
 
+        internal readonly Type output_type;
+        internal object output_data;
         internal bool isDone;
         public Signal signal;
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal ZoaExecutor()
+        internal Executor(in Type output_type)
         {
+            this.output_type = output_type;
         }
 
-        internal ZoaExecutor(in TypeStack type_stack, ValueStack value_stack, object literal)
+        internal static Executor Literal(object value) => new(value.GetType())
         {
-            type_stack.Push(literal.GetType());
-            action_SIG_EXE = exe => value_stack.Push(literal);
-        }
+            action_SIG_EXE = exe => exe.output_data = value,
+        };
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal static IEnumerator<ExecutionOutput> EExecute_SIG_ALL(ZoaExecutor executor, List<ZoaExecutor> exe_stack)
-        {
-            for (int i = 0; i < exe_stack.Count; ++i)
-                yield return exe_stack[i].OnSignal(executor.signal);
-        }
-
         internal ExecutionOutput OnSignal(in Signal signal)
         {
-            if (action_SIG_EXE == null && routine_SIG_EXE == null && routine_SIG_ALL == null)
-                throw new Exception($"nothing assigned to executor");
+            ExecutionOutput output = new(
+                status: CMD_STATUS.ERROR,
+                error: $"nothing assigned to executor"
+            );
 
             if (action_SIG_EXE != null)
             {
@@ -43,19 +41,19 @@ namespace _ZOA_
                 action_SIG_EXE(this);
                 this.signal = null;
                 isDone = true;
-                return new(CMD_STATUS.RETURN);
+                output = new(CMD_STATUS.RETURN);
             }
 
             if (routine_SIG_EXE != null)
                 if (!signal.flags.HasFlag(SIG_FLAGS.EXEC))
-                    return new(CMD_STATUS.BLOCKED);
+                    output = new(CMD_STATUS.BLOCKED);
                 else
                 {
                     this.signal = signal;
                     if (!routine_SIG_EXE.MoveNext())
                         isDone = true;
                     this.signal = null;
-                    return routine_SIG_EXE.Current;
+                    output = routine_SIG_EXE.Current;
                 }
 
             if (routine_SIG_ALL != null)
@@ -64,10 +62,17 @@ namespace _ZOA_
                 if (!routine_SIG_ALL.MoveNext())
                     isDone = true;
                 this.signal = null;
-                return routine_SIG_ALL.Current;
+                output = routine_SIG_ALL.Current;
             }
 
-            throw new Exception($"should not reach here (nothing assigned to executor");
+            if (isDone)
+                if (output_type != null)
+                    if (output_data == null)
+                        output = new(CMD_STATUS.ERROR, error: $"no output, expected {output_type}");
+                    else if (output_type != output_data.GetType())
+                        output = new(CMD_STATUS.ERROR, error: $"wrong output, expected {output_type}, got {output_data} ({output_data.GetType()})");
+
+            return output;
         }
 
         //----------------------------------------------------------------------------------------------------------

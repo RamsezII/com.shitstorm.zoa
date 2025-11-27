@@ -7,19 +7,15 @@ namespace _ZOA_
         internal bool TryParseComparison(
             in Signal signal,
             in MemScope scope,
-            in TypeStack type_stack,
-            in ValueStack value_stack,
-            out ZoaExecutor executor
+            in ExecutionStack exec_stack
         )
         {
-            if (TryParseAddSub(signal, scope, type_stack, value_stack, T_object, out executor))
+            if (TryParseAddSub(signal, scope, T_object, exec_stack))
             {
                 if (!signal.reader.TryReadChar_matches_out(out char op_char, true, "!<>="))
                     return true;
                 else
                 {
-                    Type type_a = type_stack.Pop();
-
                     OP_FLAGS code = op_char switch
                     {
                         '<' => OP_FLAGS.LESSER_THAN,
@@ -34,11 +30,11 @@ namespace _ZOA_
 
                     signal.reader.LintToThisPosition(signal.reader.lint_theme.operators, true);
 
-                    if (TryParseAddSub(signal, scope, type_stack, value_stack, T_object, out var addsub2))
+                    Executor addsub1 = exec_stack.Peek();
+                    if (TryParseAddSub(signal, scope, T_object, exec_stack))
                     {
-                        Type type_b = type_stack.Pop();
-                        var addsub1 = executor;
-                        if (TryParsePair(signal, type_stack, value_stack, T_object, code, addsub1, type_a, addsub2, type_b, out executor))
+                        Executor addsub2 = exec_stack.Peek();
+                        if (TryParsePair(signal, T_object, code, addsub1, addsub2, exec_stack))
                             return true;
                     }
                     else
