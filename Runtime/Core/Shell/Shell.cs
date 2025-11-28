@@ -26,14 +26,9 @@ namespace _ZOA_
             T_int = typeof(int),
             T_float = typeof(float),
             T_string = typeof(string),
-            T_path = typeof(ZoaPath);
-
-        public string workdir = ArkPaths.instance.Value.dpath_home;
-
-        public LintedString RegularPrefixe() => new(
-            text: $"{ArkMachine.user_name.Value}:{workdir}$ ",
-            lint: $"{ArkMachine.user_name.Value.SetColor("#73CC26")}:{workdir.SetColor("#73B2D9")}$ "
-        );
+            T_path = typeof(ZoaPath),
+            T_fpath = typeof(ZoaFPath),
+            T_dpath = typeof(ZoaDPath);
 
         //----------------------------------------------------------------------------------------------------------
 

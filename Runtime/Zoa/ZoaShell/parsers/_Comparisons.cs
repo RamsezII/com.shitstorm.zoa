@@ -1,14 +1,17 @@
-﻿namespace _ZOA_
+﻿using System;
+
+namespace _ZOA_
 {
     partial class ZoaShell
     {
         internal bool TryParseComparison(
             in Signal signal,
             in MemScope scope,
+            in Type expected_type,
             in ExecutionStack exec_stack
         )
         {
-            if (TryParseAddSub(signal, scope, null, exec_stack))
+            if (TryParseAddSub(signal, scope, expected_type, exec_stack))
             {
                 if (!signal.reader.TryReadChar_matches_out(out char op_char, true, "!<>="))
                     return true;
@@ -29,7 +32,7 @@
                     signal.reader.LintToThisPosition(signal.reader.lint_theme.operators, true);
 
                     Executor addsub1 = exec_stack.Peek();
-                    if (TryParseAddSub(signal, scope, T_object, exec_stack))
+                    if (TryParseAddSub(signal, scope, expected_type ?? T_object, exec_stack))
                     {
                         Executor addsub2 = exec_stack.Peek();
                         if (TryParsePair(signal, T_object, code, addsub1, addsub2, exec_stack))

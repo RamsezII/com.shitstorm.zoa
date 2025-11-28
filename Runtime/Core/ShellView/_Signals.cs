@@ -18,7 +18,7 @@ namespace _ZOA_
                     cursor_i: cursor
                 );
 
-                Signal sig_check = new(SIG_FLAGS.CHECK | SIG_FLAGS.LINT, reader1, null);
+                Signal sig_check = new(SIG_FLAGS.CHECK, reader1, null);
                 shell.OnSignal(sig_check);
 
                 if (sig_check.reader.sig_error != null)

@@ -27,7 +27,7 @@ namespace _ZOA_
                     cursor_i: cursor
                 );
 
-                Signal sig_change = new(SIG_FLAGS.LINT, last_reader, null);
+                Signal sig_change = new(SIG_FLAGS.CHANGE | SIG_FLAGS.LINT, last_reader, null);
                 shell.OnSignal(sig_change);
 
                 stdin_field.lint.text = shell.prefixe._value.lint + sig_change.reader.GetLintResult();

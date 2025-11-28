@@ -9,6 +9,7 @@ namespace _ZOA_
         _NONE_,
         Cmd,
         Sript,
+        Change,
         Lint,
         Check,
         Stdin,
@@ -20,6 +21,7 @@ namespace _ZOA_
     {
         CMD = 1 << SIG_ENUM.Cmd,
         SCRIPT = 1 << SIG_ENUM.Sript,
+        CHANGE = 1 << SIG_ENUM.Change,
         LINT = 1 << SIG_ENUM.Lint,
         CHECK = 1 << SIG_ENUM.Check,
         STDIN = 1 << SIG_ENUM.Stdin,

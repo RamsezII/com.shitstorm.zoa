@@ -32,7 +32,7 @@ namespace _ZOA_
 
                     var term1 = exec_stack.Peek();
 
-                    if (TryParseAddSub(signal, scope, expected_type, exec_stack))
+                    if (TryParseAddSub(signal, scope, expected_type ?? T_object, exec_stack))
                     {
                         var term2 = exec_stack.Peek();
                         if (TryParsePair(signal, expected_type, code, term1, term2, exec_stack))

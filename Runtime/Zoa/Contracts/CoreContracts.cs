@@ -10,7 +10,7 @@ namespace _ZOA_
             Contract.AddContract(new(
                 name: "run",
                 output_type: null,
-                parameters: new ZoaTypes(Shell.T_path),
+                parameters: new ZoaTypes(Shell.T_fpath),
                 action_SIG_EXE: static (exe, scope, opts, prms) => exe.signal.Stdout(prms[0], null)
             ));
         }

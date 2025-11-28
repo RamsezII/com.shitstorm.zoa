@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace _ZOA_
 {
@@ -27,7 +26,7 @@ namespace _ZOA_
             if (!TryParseAssignation(signal, scope, expected_type, exec_stack) && signal.reader.sig_error != null)
                 return false;
 
-            if (exe_count_bf_assign == exec_stack._stack.Count && !TryParseOr(signal, scope, exec_stack))
+            if (exe_count_bf_assign == exec_stack._stack.Count && !TryParseOr(signal, scope, expected_type, exec_stack))
                 return false;
 
             if (read_as_argument)
@@ -48,7 +47,7 @@ namespace _ZOA_
 
                 ExecutionStack exec_stack_yes = new();
 
-                if (!TryParseExpression(signal, scope, false, typeof(object), exec_stack_yes))
+                if (!TryParseExpression(signal, scope, false, expected_type ?? T_object, exec_stack_yes))
                     signal.reader.Stderr($"expected expression after ternary operator '?'");
                 else
                 {
@@ -60,7 +59,7 @@ namespace _ZOA_
                     {
                         ExecutionStack exec_stack_no = new();
 
-                        if (!TryParseExpression(signal, scope, false, typeof(object), exec_stack_no))
+                        if (!TryParseExpression(signal, scope, false, expected_type ?? T_object, exec_stack_no))
                             signal.reader.Stderr($"expected second expression after ternary operator ':'");
                         else if (signal.arm_executors)
                         {
