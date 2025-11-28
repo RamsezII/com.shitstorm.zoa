@@ -25,7 +25,8 @@ namespace _ZOA_
             T_bool = typeof(bool),
             T_int = typeof(int),
             T_float = typeof(float),
-            T_string = typeof(string);
+            T_string = typeof(string),
+            T_path = typeof(ZoaPath);
 
         public string workdir = ArkPaths.instance.Value.dpath_home;
 

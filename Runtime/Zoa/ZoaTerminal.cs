@@ -13,5 +13,13 @@ namespace _ZOA_
         {
             OSView.instance.GetSoftwareButton<ZoaTerminal>(force: true);
         }
+
+        //----------------------------------------------------------------------------------------------------------
+
+        protected override void Awake()
+        {
+            base.Awake();
+            trad_title.SetTrad("ZOA");
+        }
     }
 }
