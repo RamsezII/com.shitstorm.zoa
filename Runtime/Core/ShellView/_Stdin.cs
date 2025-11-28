@@ -6,10 +6,6 @@ namespace _ZOA_
 {
     partial class ShellView
     {
-        [SerializeField] int last_tab;
-
-        //----------------------------------------------------------------------------------------------------------
-
         char OnValidateStdin_char(string text, int charIndex, char addedChar)
         {
             switch (shell.status._value)
@@ -20,7 +16,6 @@ namespace _ZOA_
                         switch (addedChar)
                         {
                             case '\t':
-                                last_tab = Time.frameCount;
                                 OnTab();
                                 return '\0';
 

@@ -4,34 +4,6 @@ namespace _ZOA_
 {
     partial class ShellView
     {
-        void OnChange()
-        {
-            if (GetStdin(out string stdin, out int cursor))
-            {
-                CodeReader reader = new(
-                    lint_theme: lint_theme,
-                    strict_syntax: false,
-                    text: stdin,
-                    script_path: null,
-                    cursor_i: cursor
-                );
-
-                Signal sig_change = new(SIG_FLAGS.LINT, reader, null);
-                shell.OnSignal(sig_change);
-
-                stdin_field.lint.text = shell.prefixe._value.lint + sig_change.reader.GetLintResult();
-            }
-            else
-                ResetStdin();
-
-            ResizeStdin();
-        }
-
-        void OnTab()
-        {
-
-        }
-
         void OnSubmit()
         {
             if (GetStdin(out string stdin, out int cursor))
@@ -65,6 +37,14 @@ namespace _ZOA_
 
                 Signal sig_exec = new(SIG_FLAGS.STDIN, reader2, AddLine);
                 shell.OnSignal(sig_exec);
+
+                if (sig_exec.reader.sig_error != null)
+                {
+                    AddLine(sig_exec.reader.sig_error, sig_exec.reader.sig_error.SetColor(Colors.orange_red));
+                    return;
+                }
+
+                AddToHistory(reader2.text);
             }
         }
     }

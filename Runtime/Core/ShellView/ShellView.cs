@@ -32,6 +32,14 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void OnAfterSceneLoad()
+        {
+            InitShellHistory();
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+
         protected virtual void Awake()
         {
             stdout_field = transform.Find("scrollview/viewport/content/std_out").GetComponent<ShellField>();
@@ -89,13 +97,6 @@ namespace _ZOA_
 
             ResetStdin();
             RefreshStdout();
-        }
-
-        //----------------------------------------------------------------------------------------------------------
-
-        protected virtual bool OnImguiInputs(Event e)
-        {
-            return false;
         }
 
         //----------------------------------------------------------------------------------------------------------
