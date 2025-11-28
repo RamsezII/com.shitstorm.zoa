@@ -17,18 +17,18 @@ namespace _ZOA_
             ForceFull,
         }
 
-        public string workdir = ArkPaths.instance.Value.dpath_home;
+        public readonly ValueHandler<string> workdir = new(ArkPaths.instance.Value.dpath_home);
 
         public LintedString RegularPrefixe() => new(
-            text: $"{ArkMachine.user_name.Value}:{workdir}$ ",
-            lint: $"{ArkMachine.user_name.Value.SetColor("#73CC26")}:{workdir.SetColor("#73B2D9")}$ "
+            text: $"{ArkMachine.user_name.Value}:{workdir._value}$ ",
+            lint: $"{ArkMachine.user_name.Value.SetColor("#73CC26")}:{workdir._value.SetColor("#73B2D9")}$ "
         );
 
         //--------------------------------------------------------------------------------------------------------------
 
-        internal void ChangeWorkdir(in string path) => workdir = PathCheck(path, PathModes.ForceFull, false, false, out _, out _);
+        internal void ChangeWorkdir(in string path) => workdir.Value = PathCheck(path, PathModes.ForceFull, false, false, out _, out _);
 
-        public string PathCheck(in string path, in PathModes path_mode, in bool check_quotes, in bool force_quotes, out bool is_rooted, out bool is_local_to_shell) => PathCheck(workdir, path, path_mode, check_quotes, force_quotes, out is_rooted, out is_local_to_shell);
+        public string PathCheck(in string path, in PathModes path_mode, in bool check_quotes, in bool force_quotes, out bool is_rooted, out bool is_local_to_shell) => PathCheck(workdir._value, path, path_mode, check_quotes, force_quotes, out is_rooted, out is_local_to_shell);
         public static string PathCheck(in string workdir, in string path, in PathModes path_mode, in bool check_quotes, in bool force_quotes, out bool is_rooted, out bool is_local_to_shell)
         {
             bool empty = string.IsNullOrWhiteSpace(path);

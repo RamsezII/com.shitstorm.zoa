@@ -3,15 +3,15 @@ using UnityEngine;
 
 namespace _ZOA_
 {
-    static class Zoa_maths
+    partial class ZoaShell
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        static void OnBeforeSceneLoad()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void CMD_basics()
         {
             Contract.AddContract(new(
                 name: "echo",
                 output_type: null,
-                parameters: new ZoaTypes(Shell.T_object),
+                parameters: new ZoaTypes(T_object),
                 action_SIG_EXE: static (exe, scope, opts, args) =>
                 {
                     object msg = args[0];
@@ -22,7 +22,7 @@ namespace _ZOA_
             Contract.AddContract(new(
                 name: "wait",
                 output_type: null,
-                parameters: new ZoaTypes(Shell.T_float),
+                parameters: new ZoaTypes(T_float),
                 routine_SIG_EXE: static (exe, scope, opts, prms) =>
                 {
                     return ERoutine(exe, prms);
@@ -47,8 +47,8 @@ namespace _ZOA_
 
             Contract.AddContract(new(
                 name: "stdin",
-                output_type: Shell.T_string,
-                parameters: new ZoaTypes(Shell.T_string),
+                output_type: T_string,
+                parameters: new ZoaTypes(T_string),
                 routine_SIG_ALL: static (exe, scope, opts, prms) =>
                 {
                     return ERoutine(exe, prms);

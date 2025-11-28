@@ -34,7 +34,7 @@
             {
                 ExecutionStack exec_stack = new();
                 if (!TryParseProgram(signal, new MemScope(mem_scope), exec_stack, out bool background))
-                    signal.reader.sig_error ??= $"could not parse {nameof(signal)}";
+                    signal.reader.Stderr($"could not parse {nameof(signal)}");
                 else if (signal.arm_executors)
                     if (background)
                         background_executions.Add(exec_stack);

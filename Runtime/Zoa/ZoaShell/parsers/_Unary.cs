@@ -15,13 +15,16 @@ namespace _ZOA_
             int read_old = signal.reader.read_i;
 
             if (!signal.reader.TryReadChar_matches_out(out char unary_operator, true, "+-!"))
+            {
                 if (TryParseFactor(signal, scope, expected_type, exec_stack))
                     return true;
                 else
                 {
-                    signal.reader.sig_error ??= $"could not parse factor";
+                    signal.reader.Stderr($"could not parse factor");
+                    read_old = signal.reader.read_i;
                     goto failure;
                 }
+            }
             else
             {
                 OP_CODES code = unary_operator switch
@@ -34,6 +37,7 @@ namespace _ZOA_
 
                 if ((code == OP_CODES.ADD || code == OP_CODES.SUBSTRACT) && signal.reader.TryReadChar_match(unary_operator, signal.reader.lint_theme.operators, skippables: null))
                 {
+                    read_old = signal.reader.read_i;
                     if (!signal.reader.TryReadArgument(out string var_name, false, signal.reader.lint_theme.variables, skippables: null))
                     {
                         signal.reader.Stderr($"expected variable after increment operator '{unary_operator}{unary_operator}'.");
@@ -46,7 +50,7 @@ namespace _ZOA_
                     }
 
                     Debug.LogError("TODO ++i");
-                    signal.reader.sig_error ??= $"++i TODO";
+                    signal.reader.Stderr($"++i TODO");
                     goto failure;
                 }
                 else if (!TryParseFactor(signal, scope, expected_type, exec_stack))

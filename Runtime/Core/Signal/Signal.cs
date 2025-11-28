@@ -30,6 +30,7 @@ namespace _ZOA_
 
     public sealed class Signal
     {
+        public readonly Shell shell;
         public readonly SIG_FLAGS flags;
         public readonly CodeReader reader;
         public readonly Action<object, string> Stdout;
@@ -38,8 +39,9 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
-        public Signal(in SIG_FLAGS flags, in CodeReader reader, in Action<object, string> on_stdout)
+        public Signal(in Shell shell, in SIG_FLAGS flags, in CodeReader reader, in Action<object, string> on_stdout)
         {
+            this.shell = shell;
             this.flags = flags;
             this.reader = reader;
             arm_executors = flags.HasFlag(SIG_FLAGS.STDIN);

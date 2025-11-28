@@ -20,10 +20,10 @@
 
     public readonly struct ZoaDPath
     {
-        public readonly string _value;
-        public override readonly string ToString() => _value;
-        public ZoaDPath(string path) => _value = path;
+        public readonly string _path;
+        public override readonly string ToString() => _path;
+        public ZoaDPath(string path) => _path = path;
         public static implicit operator ZoaDPath(in string path) => new(path);
-        public static implicit operator string(in ZoaDPath path) => path._value;
+        public static implicit operator string(in ZoaDPath path) => path._path;
     }
 }

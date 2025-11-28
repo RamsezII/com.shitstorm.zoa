@@ -15,7 +15,7 @@ namespace _ZOA_
                 for (int i = 0; i < background_executions.Count; i++)
                 {
                     var stack = background_executions[i];
-                    Signal sig1 = new(SIG_FLAGS.TICK, null, on_output);
+                    Signal sig1 = new(this, SIG_FLAGS.TICK, null, on_output);
                     if (!stack.OnSignal(sig1, out _))
                         background_executions.RemoveAt(i--);
                 }
@@ -26,7 +26,7 @@ namespace _ZOA_
 
         void FrontTick(in Signal signal)
         {
-            Signal sig2 = signal ?? new(SIG_FLAGS.TICK, null, on_output);
+            Signal sig2 = signal ?? new(this, SIG_FLAGS.TICK, null, on_output);
             if (front_execution.OnSignal(sig2, out var output))
             {
                 status.Value = output.status;

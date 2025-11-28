@@ -18,12 +18,13 @@ namespace _ZOA_
                     cursor_i: cursor
                 );
 
-                Signal sig_check = new(SIG_FLAGS.CHECK, reader1, null);
+                Signal sig_check = new(shell, SIG_FLAGS.CHECK, reader1, null);
                 shell.OnSignal(sig_check);
 
                 if (sig_check.reader.sig_error != null)
                 {
-                    AddLine(sig_check.reader.sig_error, sig_check.reader.sig_error.SetColor(Colors.orange));
+                    sig_check.reader.LocalizeError();
+                    AddLine(sig_check.reader.sig_long_error, sig_check.reader.sig_long_error.SetColor(Colors.orange));
                     return;
                 }
 
@@ -35,12 +36,13 @@ namespace _ZOA_
                     cursor_i: cursor
                 );
 
-                Signal sig_exec = new(SIG_FLAGS.STDIN, reader2, AddLine);
+                Signal sig_exec = new(shell, SIG_FLAGS.STDIN, reader2, AddLine);
                 shell.OnSignal(sig_exec);
 
                 if (sig_exec.reader.sig_error != null)
                 {
-                    AddLine(sig_exec.reader.sig_error, sig_exec.reader.sig_error.SetColor(Colors.orange_red));
+                    sig_exec.reader.LocalizeError();
+                    AddLine(sig_exec.reader.sig_long_error, sig_exec.reader.sig_long_error.SetColor(Colors.orange_red));
                     return;
                 }
 

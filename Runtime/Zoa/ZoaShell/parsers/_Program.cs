@@ -36,7 +36,6 @@ namespace _ZOA_
                 return true;
 
             failure:
-            signal.reader.LocalizeError();
             return false;
         }
     }
