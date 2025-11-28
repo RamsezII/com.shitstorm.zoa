@@ -71,7 +71,7 @@ namespace _ZOA_
                                 if (signal.is_exec)
                                     exec_stack.Push(Executor.Literal(_float));
                                 else
-                                    exec_stack.Push(new Executor("number", T_number));
+                                    exec_stack.Push(new Executor("number", T_float));
                             }
                             else if (int.TryParse(arg, out int _int))
                             {

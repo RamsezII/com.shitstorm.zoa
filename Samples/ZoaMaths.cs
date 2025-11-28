@@ -22,16 +22,18 @@ namespace _ZOA_
             Contract.AddContract(new(
                 name: "wait",
                 output_type: null,
+                parameters: new ZoaTypes(Shell.T_float),
                 routine_SIG_EXE: static (exe, scope, opts, prms) =>
                 {
-                    return ERoutine(exe);
-                    static IEnumerator<ExecutionOutput> ERoutine(Executor exe)
+                    return ERoutine(exe, prms);
+                    static IEnumerator<ExecutionOutput> ERoutine(Executor exe, List<object> prms)
                     {
+                        float time = (float)prms[0];
                         float timer = 0;
-                        while (timer < 1)
+                        while (timer < time)
                         {
                             timer += Time.unscaledDeltaTime;
-                            yield return new(progress: timer);
+                            yield return new(progress: timer / time);
                         }
                         exe.signal.Stdout("wait end", null);
                     }

@@ -31,35 +31,63 @@ namespace _ZOA_
                                 OP_FLAGS.XOR => ab != bb,
                                 _ => throw new NotImplementedException(),
                             };
-                        if (a is int ai && b is int bi)
+                        else if (a is int a1 && b is int b1)
                             c = op switch
                             {
-                                OP_FLAGS.ADD => ai + bi,
-                                OP_FLAGS.SUBSTRACT => ai - bi,
-                                OP_FLAGS.MULTIPLY => ai * bi,
-                                OP_FLAGS.DIVIDE => ai / bi,
-                                OP_FLAGS.MODULO => ai % bi,
-                                OP_FLAGS.EQUAL => ai == bi,
-                                OP_FLAGS.GREATER_THAN => ai > bi,
-                                OP_FLAGS.LESSER_THAN => ai < bi,
-                                OP_FLAGS.AND => ai & bi,
-                                OP_FLAGS.OR => ai | bi,
-                                OP_FLAGS.XOR => ai ^ bi,
+                                OP_FLAGS.ADD => a1 + b1,
+                                OP_FLAGS.SUBSTRACT => a1 - b1,
+                                OP_FLAGS.MULTIPLY => a1 * b1,
+                                OP_FLAGS.DIVIDE => a1 / b1,
+                                OP_FLAGS.MODULO => a1 % b1,
+                                OP_FLAGS.EQUAL => a1 == b1,
+                                OP_FLAGS.GREATER_THAN => a1 > b1,
+                                OP_FLAGS.LESSER_THAN => a1 < b1,
+                                OP_FLAGS.AND => a1 & b1,
+                                OP_FLAGS.OR => a1 | b1,
+                                OP_FLAGS.XOR => a1 ^ b1,
                                 _ => throw new NotImplementedException(),
                             };
-                        else if (a is float af && b is float bf)
+                        else if (a is float a2 && b is float b2)
                             c = op switch
                             {
-                                OP_FLAGS.ADD => af + bf,
-                                OP_FLAGS.SUBSTRACT => af - bf,
-                                OP_FLAGS.MULTIPLY => af * bf,
-                                OP_FLAGS.DIVIDE => af / bf,
-                                OP_FLAGS.MODULO => af % bf,
-                                OP_FLAGS.EQUAL => af == bf,
-                                OP_FLAGS.GREATER_THAN => af > bf,
-                                OP_FLAGS.LESSER_THAN => af < bf,
+                                OP_FLAGS.ADD => a2 + b2,
+                                OP_FLAGS.SUBSTRACT => a2 - b2,
+                                OP_FLAGS.MULTIPLY => a2 * b2,
+                                OP_FLAGS.DIVIDE => a2 / b2,
+                                OP_FLAGS.MODULO => a2 % b2,
+                                OP_FLAGS.EQUAL => a2 == b2,
+                                OP_FLAGS.GREATER_THAN => a2 > b2,
+                                OP_FLAGS.LESSER_THAN => a2 < b2,
                                 _ => throw new NotImplementedException(),
                             };
+                        else if (a is int a3 && b is float b3)
+                            c = op switch
+                            {
+                                OP_FLAGS.ADD => a3 + b3,
+                                OP_FLAGS.SUBSTRACT => a3 - b3,
+                                OP_FLAGS.MULTIPLY => a3 * b3,
+                                OP_FLAGS.DIVIDE => a3 / b3,
+                                OP_FLAGS.MODULO => a3 % b3,
+                                OP_FLAGS.EQUAL => a3 == b3,
+                                OP_FLAGS.GREATER_THAN => a3 > b3,
+                                OP_FLAGS.LESSER_THAN => a3 < b3,
+                                _ => throw new NotImplementedException(),
+                            };
+                        else if (a is float a4 && b is int b4)
+                            c = op switch
+                            {
+                                OP_FLAGS.ADD => a4 + b4,
+                                OP_FLAGS.SUBSTRACT => a4 - b4,
+                                OP_FLAGS.MULTIPLY => a4 * b4,
+                                OP_FLAGS.DIVIDE => a4 / b4,
+                                OP_FLAGS.MODULO => a4 % b4,
+                                OP_FLAGS.EQUAL => a4 == b4,
+                                OP_FLAGS.GREATER_THAN => a4 > b4,
+                                OP_FLAGS.LESSER_THAN => a4 < b4,
+                                _ => throw new NotImplementedException(),
+                            };
+                        else
+                            throw new NotImplementedException();
 
                         exe.output = c;
                     }

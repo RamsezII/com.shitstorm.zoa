@@ -19,7 +19,7 @@ namespace _ZOA_
                     signal.reader.sig_error ??= $"no variable named '{var_name}'.";
                     goto failure;
                 }
-                else if (expected_type != null && !var_cell.type.IsOfType(expected_type))
+                else if (expected_type != null && !var_cell.type.CanBeAssignedTo(expected_type))
                 {
                     signal.reader.sig_error ??= $"expted variable of type {expected_type}, got {var_cell.type}";
                     goto failure;

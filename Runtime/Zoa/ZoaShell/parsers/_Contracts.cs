@@ -19,21 +19,21 @@ namespace _ZOA_
                     signal.reader.sig_error ??= $"no contract named '{cont_name}'.";
                     goto failure;
                 }
-                else if (expected_type != null && contract.output_type == null && !contract.output_type.IsOfType(expected_type))
+                else if (expected_type != null && (contract.output_type == null || !contract.output_type.CanBeAssignedTo(expected_type)))
                 {
                     signal.reader.sig_error ??= $"expected contract of type {expected_type}, got {contract.output_type}";
                     goto failure;
                 }
                 else
                 {
-                    Dictionary<string, Executor> exe_opts = null;
+                    Dictionary<string, Executor> opts_exe = null;
                     if (contract.options != null)
                     {
-                        exe_opts = new();
+                        opts_exe = new();
                         foreach (var pair in contract.options)
                             if (pair.Value != null)
                                 if (TryParseExpression(signal, scope, false, pair.Value, exec_stack))
-                                    exe_opts.Add(pair.Key.long_name, exec_stack.Peek());
+                                    opts_exe.Add(pair.Key.long_name, exec_stack.Peek());
                                 else
                                 {
                                     signal.reader.sig_error ??= $"could not parse expression for option {(pair.Key.short_name != '\0' ? $"\"-{pair.Key.short_name}\"" : string.Empty)}/\"--{pair.Key.long_name}\"";
@@ -53,15 +53,15 @@ namespace _ZOA_
                         goto failure;
                     }
 
-                    List<Executor> exe_prms = null;
+                    List<Executor> prms_exe = null;
                     if (contract.parameters != null)
                     {
-                        exe_prms = new();
+                        prms_exe = new();
                         for (int i = 0; i < contract.parameters._list.Count; i++)
                         {
                             Type arg_type = contract.parameters._list[i];
                             if (TryParseExpression(signal, scope, true, arg_type, exec_stack))
-                                exe_prms.Add(exec_stack.Peek());
+                                prms_exe.Add(exec_stack.Peek());
                             else
                             {
                                 signal.reader.sig_error ??= $"could not parse argument[{i}]";
@@ -69,6 +69,10 @@ namespace _ZOA_
                             }
                         }
                     }
+
+                    bool opts_b = opts_exe != null;
+                    bool prms_b = prms_exe != null;
+                    bool args_b = opts_b || prms_b;
 
                     if (signal.reader.sig_error != null)
                         goto failure;
@@ -79,42 +83,44 @@ namespace _ZOA_
                         goto failure;
                     }
 
-                    var executor = new Executor(contract.name, contract.output_type);
+
+                    var args_exe = args_b ? new Executor("compute arguments", null) : null;
+                    Dictionary<string, object> opts_vals = opts_b ? new(opts_exe.Count) : null;
+                    List<object> prms_vals = prms_b ? new(prms_exe.Count) : null;
+
+                    if (args_b)
+                    {
+                        exec_stack.Push(args_exe);
+                        if (signal.is_exec)
+                            args_exe.action_SIG_EXE = exe =>
+                            {
+                                if (opts_b)
+                                    foreach (var pair in opts_exe)
+                                        if (pair.Value == null)
+                                            opts_vals.Add(pair.Key, null);
+                                        else
+                                            opts_vals.Add(pair.Key, pair.Value.output);
+
+                                if (prms_b)
+                                    for (int i = 0; i < prms_exe.Count; i++)
+                                        prms_vals.Add(prms_exe[i].output);
+                            };
+                    }
+
+                    var cont_exe = new Executor(contract.name, contract.output_type);
+                    exec_stack.Push(cont_exe);
+
                     if (signal.is_exec)
                     {
-                        Dictionary<string, object> vals_opts = null;
-                        List<object> vals_prms = null;
-
-                        executor.action_SIG_EXE = exe =>
-                        {
-                            if (exe_opts != null)
-                            {
-                                vals_opts = new(exe_opts.Count);
-                                foreach (var pair in exe_opts)
-                                    if (pair.Value == null)
-                                        vals_opts.Add(pair.Key, null);
-                                    else
-                                        vals_opts.Add(pair.Key, pair.Value.output);
-                            }
-
-                            if (exe_prms != null)
-                            {
-                                vals_prms = new(exe_prms.Count);
-                                for (int i = 0; i < exe_prms.Count; i++)
-                                    vals_prms.Add(exe_prms[i].output);
-                            }
-                        };
-
                         if (contract.action_SIG_EXE != null)
-                            executor.action_SIG_EXE += exe => contract.action_SIG_EXE(exe, scope, vals_opts, vals_prms);
+                            cont_exe.action_SIG_EXE = exe => contract.action_SIG_EXE(exe, scope, opts_vals, prms_vals);
 
                         if (contract.routine_SIG_EXE != null)
-                            executor.routine_SIG_EXE = contract.routine_SIG_EXE(executor, scope, vals_opts, vals_prms);
+                            cont_exe.routine_SIG_EXE = contract.routine_SIG_EXE(cont_exe, scope, opts_vals, prms_vals);
 
                         if (contract.routine_SIG_ALL != null)
-                            executor.routine_SIG_ALL = contract.routine_SIG_ALL(executor, scope, vals_opts, vals_prms);
+                            cont_exe.routine_SIG_ALL = contract.routine_SIG_ALL(cont_exe, scope, opts_vals, prms_vals);
                     }
-                    exec_stack.Push(executor);
 
                     return true;
                 }
