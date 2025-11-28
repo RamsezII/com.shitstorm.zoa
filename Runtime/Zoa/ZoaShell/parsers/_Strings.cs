@@ -12,8 +12,6 @@ namespace _ZOA_
             in ExecutionStack exec_stack
         )
         {
-            bool is_exe = signal.flags.HasFlag(SIG_FLAGS.EXEC);
-
             int read_old = signal.reader.read_i;
 
             char sep = default;
@@ -55,7 +53,7 @@ namespace _ZOA_
                             // grab buffer
                             if (current_fragment.Length > 0)
                             {
-                                Executor ex = signal.is_exec
+                                Executor ex = signal.arm_executors
                                     ? Executor.Literal(current_fragment)
                                     : new("string", typeof(string));
                                 exec_stack.Push(ex);
@@ -64,7 +62,7 @@ namespace _ZOA_
 
                             // execute stack of fragments and expressions
                             Executor executor = new("string", typeof(string));
-                            if (is_exe)
+                            if (signal.arm_executors)
                                 executor.action_SIG_EXE = exe =>
                                 {
                                     StringBuilder sb = new();
@@ -84,7 +82,7 @@ namespace _ZOA_
                             // pull current fragment
                             if (current_fragment.Length > 0)
                             {
-                                Executor ex = signal.is_exec
+                                Executor ex = signal.arm_executors
                                     ? Executor.Literal(current_fragment)
                                     : new("string", typeof(string));
                                 exec_stack.Push(ex);

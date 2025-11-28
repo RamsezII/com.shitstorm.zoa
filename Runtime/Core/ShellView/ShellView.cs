@@ -60,7 +60,16 @@ namespace _ZOA_
             stdin_field.onDeselect.AddListener(OnDeselectStdin);
 
             shell.Init();
+
+            shell.prefixe.AddListener(value =>
+            {
+                stdin_field.text = value.text;
+                stdin_field.lint.text = value.lint;
+                stdin_field.caretPosition = value.text.Length;
+            });
+
             shell.on_output += AddLine;
+
             shell.status.AddListener(value =>
             {
                 switch (value)

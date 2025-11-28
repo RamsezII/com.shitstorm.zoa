@@ -51,7 +51,7 @@ namespace _ZOA_
                     {
                         case "true":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
-                            if (signal.is_exec)
+                            if (signal.arm_executors)
                                 exec_stack.Push(Executor.Literal(true));
                             else
                                 exec_stack.Push(new Executor("bool", T_bool));
@@ -59,7 +59,7 @@ namespace _ZOA_
 
                         case "false":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
-                            if (signal.is_exec)
+                            if (signal.arm_executors)
                                 exec_stack.Push(Executor.Literal(false));
                             else
                                 exec_stack.Push(new Executor("condition", T_bool));
@@ -68,21 +68,21 @@ namespace _ZOA_
                         default:
                             if (arg[^1] == 'f' && Util.TryParseFloat(arg[..^1], out float _float))
                             {
-                                if (signal.is_exec)
+                                if (signal.arm_executors)
                                     exec_stack.Push(Executor.Literal(_float));
                                 else
                                     exec_stack.Push(new Executor("number", T_float));
                             }
                             else if (int.TryParse(arg, out int _int))
                             {
-                                if (signal.is_exec)
+                                if (signal.arm_executors)
                                     exec_stack.Push(Executor.Literal(_int));
                                 else
                                     exec_stack.Push(new Executor("int", T_int));
                             }
                             else if (Util.TryParseFloat(arg, out _float))
                             {
-                                if (signal.is_exec)
+                                if (signal.arm_executors)
                                     exec_stack.Push(Executor.Literal(_float));
                                 else
                                     exec_stack.Push(new Executor("float", T_float));

@@ -91,7 +91,7 @@ namespace _ZOA_
                     if (args_b)
                     {
                         exec_stack.Push(args_exe);
-                        if (signal.is_exec)
+                        if (signal.arm_executors)
                             args_exe.action_SIG_EXE = exe =>
                             {
                                 if (opts_b)
@@ -110,7 +110,7 @@ namespace _ZOA_
                     var cont_exe = new Executor(contract.name, contract.output_type);
                     exec_stack.Push(cont_exe);
 
-                    if (signal.is_exec)
+                    if (signal.arm_executors)
                     {
                         if (contract.action_SIG_EXE != null)
                             cont_exe.action_SIG_EXE = exe => contract.action_SIG_EXE(exe, scope, opts_vals, prms_vals);

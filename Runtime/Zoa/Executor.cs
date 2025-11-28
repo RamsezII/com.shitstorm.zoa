@@ -11,7 +11,7 @@ namespace _ZOA_
 
         public readonly string name;
         internal readonly Type type;
-        internal object output;
+        public object output;
         internal bool isDone;
         public Signal signal;
 
@@ -53,7 +53,7 @@ namespace _ZOA_
             }
 
             if (routine_SIG_EXE != null)
-                if (!signal.flags.HasFlag(SIG_FLAGS.EXEC))
+                if (!signal.flags.HasFlag(SIG_FLAGS.TICK))
                     output = new(CMD_STATUS.BLOCKED);
                 else
                 {
@@ -77,7 +77,7 @@ namespace _ZOA_
                 if (type != null)
                     if (this.output == null)
                         output = new(CMD_STATUS.ERROR, error: $"no output, expected {type}");
-                    else if (type != this.output.GetType())
+                    else if (!this.output.GetType().CanBeAssignedTo(type))
                         output = new(CMD_STATUS.ERROR, error: $"wrong output, expected {type}, got {this.output} ({this.output.GetType()})");
 
             return output;

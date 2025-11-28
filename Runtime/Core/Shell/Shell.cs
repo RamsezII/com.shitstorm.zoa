@@ -27,11 +27,24 @@ namespace _ZOA_
             T_float = typeof(float),
             T_string = typeof(string);
 
+        public string workdir = ArkPaths.instance.Value.dpath_home;
+
+        public LintedString RegularPrefixe() => new(
+            text: $"{ArkMachine.user_name.Value}:{workdir}$ ",
+            lint: $"{ArkMachine.user_name.Value.SetColor("#73CC26")}:{workdir.SetColor("#73B2D9")}$ "
+        );
+
+        //----------------------------------------------------------------------------------------------------------
+
+        protected Shell()
+        {
+            prefixe.Value = RegularPrefixe();
+        }
+
         //----------------------------------------------------------------------------------------------------------
 
         public void Init()
         {
-            RefreshPrefixe();
             Util.AddAction(ref NUCLEOR.delegates.Update_OnShellTick, OnTick);
         }
 

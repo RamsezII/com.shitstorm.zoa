@@ -28,17 +28,22 @@
 
         public override void OnSignal(in Signal signal)
         {
-            ExecutionStack exec_stack = new();
-            if (!TryParseProgram(signal, new MemScope(mem_scope), exec_stack, out bool background))
-                signal.reader.sig_error ??= $"could not parse {nameof(signal)}";
-            else if (signal.is_exec)
-                if (background)
-                    background_executions.Add(exec_stack);
-                else
-                {
-                    front_execution = exec_stack;
-                    status.Value = CMD_STATUS.BLOCKED;
-                }
+            if (front_execution != null)
+                FrontTick(signal);
+            else
+            {
+                ExecutionStack exec_stack = new();
+                if (!TryParseProgram(signal, new MemScope(mem_scope), exec_stack, out bool background))
+                    signal.reader.sig_error ??= $"could not parse {nameof(signal)}";
+                else if (signal.arm_executors)
+                    if (background)
+                        background_executions.Add(exec_stack);
+                    else
+                    {
+                        front_execution = exec_stack;
+                        status.Value = CMD_STATUS.BLOCKED;
+                    }
+            }
         }
     }
 }

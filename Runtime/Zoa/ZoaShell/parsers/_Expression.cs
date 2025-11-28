@@ -62,7 +62,7 @@ namespace _ZOA_
 
                         if (!TryParseExpression(signal, scope, false, typeof(object), exec_stack_no))
                             signal.reader.Stderr($"expected second expression after ternary operator ':'");
-                        else if (signal.is_exec)
+                        else if (signal.arm_executors)
                         {
                             Executor exe_no = exec_stack.Peek();
                             Executor exe_tern_eval = null;

@@ -11,7 +11,8 @@ namespace _ZOA_
         Sript,
         Lint,
         Check,
-        Exec,
+        Stdin,
+        Tick,
     }
 
     [Flags]
@@ -21,7 +22,8 @@ namespace _ZOA_
         SCRIPT = 1 << SIG_ENUM.Sript,
         LINT = 1 << SIG_ENUM.Lint,
         CHECK = 1 << SIG_ENUM.Check,
-        EXEC = 1 << SIG_ENUM.Exec,
+        STDIN = 1 << SIG_ENUM.Stdin,
+        TICK = 1 << SIG_ENUM.Tick,
     }
 
     public sealed class Signal
@@ -30,7 +32,7 @@ namespace _ZOA_
         public readonly CodeReader reader;
         public readonly Action<object, string> Stdout;
         public string exe_error;
-        public bool is_exec;
+        public bool arm_executors;
 
         //----------------------------------------------------------------------------------------------------------
 
@@ -38,7 +40,7 @@ namespace _ZOA_
         {
             this.flags = flags;
             this.reader = reader;
-            is_exec = flags.HasFlag(SIG_FLAGS.EXEC);
+            arm_executors = flags.HasFlag(SIG_FLAGS.STDIN);
             Stdout = on_stdout ?? ((data, lint) => Debug.Log(lint ?? data.ToString()));
         }
     }

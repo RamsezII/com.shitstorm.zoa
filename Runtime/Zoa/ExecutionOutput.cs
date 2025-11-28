@@ -15,7 +15,7 @@ namespace _ZOA_
         public ExecutionOutput(in CMD_STATUS status = 0, in LintedString prefixe = default, in float progress = 0, in string error = null)
         {
             this.status = status;
-            this.prefixe = prefixe;
+            this.prefixe = prefixe.text == null ? LintedString.EMPTY : prefixe;
             this.progress = progress;
             this.error = error;
         }

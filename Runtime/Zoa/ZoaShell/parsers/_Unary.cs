@@ -61,7 +61,7 @@ namespace _ZOA_
                     Executor executor = new("unary", expected_type);
                     exec_stack.Push(executor);
 
-                    if (signal.is_exec)
+                    if (signal.arm_executors)
                         executor.action_SIG_EXE = exe =>
                         {
                             exe.output = factor.output switch
