@@ -56,7 +56,7 @@ namespace _ZOA_
                     {
                         string prefixe = prms[0].ToString();
                         while (true)
-                            if (!exe.signal.flags.HasFlag(SIG_FLAGS.STDIN))
+                            if (!exe.signal.flags.HasFlag(SIG_FLAGS.SUBMIT))
                                 yield return new(CMD_STATUS.WAIT_FOR_STDIN, prefixe: new(prefixe, Colors.alice_blue));
                             else
                             {

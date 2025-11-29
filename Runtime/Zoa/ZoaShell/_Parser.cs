@@ -33,16 +33,15 @@
             else
             {
                 ExecutionStack exec_stack = new();
-                if (!TryParseProgram(signal, new MemScope(mem_scope), exec_stack, out bool background))
-                    signal.reader.Stderr($"could not parse {nameof(signal)}");
-                else if (signal.arm_executors)
-                    if (background)
-                        background_executions.Add(exec_stack);
-                    else
-                    {
-                        front_execution = exec_stack;
-                        status.Value = CMD_STATUS.BLOCKED;
-                    }
+                if (TryParseProgram(signal, new MemScope(mem_scope), exec_stack, out bool background))
+                    if (signal.flags.HasFlag(SIG_FLAGS.SUBMIT))
+                        if (background)
+                            background_executions.Add(exec_stack);
+                        else
+                        {
+                            front_execution = exec_stack;
+                            status.Value = CMD_STATUS.BLOCKED;
+                        }
             }
         }
     }

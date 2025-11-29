@@ -36,7 +36,7 @@ namespace _ZOA_
                     cursor_i: cursor
                 );
 
-                Signal sig_exec = new(shell, SIG_FLAGS.STDIN, reader2, AddLine);
+                Signal sig_exec = new(shell, SIG_FLAGS.SUBMIT, reader2, AddLine);
                 shell.OnSignal(sig_exec);
 
                 if (sig_exec.reader.sig_error != null)

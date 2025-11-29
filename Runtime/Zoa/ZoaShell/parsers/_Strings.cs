@@ -6,7 +6,7 @@ namespace _ZOA_
 {
     partial class ZoaShell
     {
-        public bool TryParseString(
+        internal bool TryParseString(
             in Signal signal,
             MemScope scope,
             in ExecutionStack exec_stack

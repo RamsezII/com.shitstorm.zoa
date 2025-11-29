@@ -5,7 +5,7 @@ namespace _ZOA_
 {
     partial class ZoaShell
     {
-        public bool TryParseProgram(in Signal signal, in MemScope scope, in ExecutionStack exec_stack, out bool background)
+        internal bool TryParseProgram(in Signal signal, in MemScope scope, in ExecutionStack exec_stack, out bool background)
         {
             background = false;
 

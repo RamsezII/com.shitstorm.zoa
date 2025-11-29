@@ -14,7 +14,7 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
-        public bool TryParseExpression(
+        internal bool TryParseExpression(
             in Signal signal,
             MemScope scope,
             in bool read_as_argument,

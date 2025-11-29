@@ -24,7 +24,7 @@ namespace _ZOA_
         CHANGE = 1 << SIG_ENUM.Change,
         LINT = 1 << SIG_ENUM.Lint,
         CHECK = 1 << SIG_ENUM.Check,
-        STDIN = 1 << SIG_ENUM.Stdin,
+        SUBMIT = 1 << SIG_ENUM.Stdin,
         TICK = 1 << SIG_ENUM.Tick,
     }
 
@@ -44,7 +44,7 @@ namespace _ZOA_
             this.shell = shell;
             this.flags = flags;
             this.reader = reader;
-            arm_executors = flags.HasFlag(SIG_FLAGS.STDIN);
+            arm_executors = flags.HasFlag(SIG_FLAGS.SUBMIT);
             Stdout = on_stdout ?? ((data, lint) => Debug.Log(lint ?? data.ToString()));
         }
     }

@@ -22,6 +22,8 @@ namespace _ZOA_
 
             if (front_execution != null)
                 FrontTick(null);
+            else
+                status.Value = CMD_STATUS.WAIT_FOR_STDIN;
         }
 
         void FrontTick(in Signal signal)

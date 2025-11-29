@@ -1,9 +1,13 @@
 ﻿namespace _ZOA_
 {
-    sealed partial class ZoaShell : Shell
+    public sealed partial class ZoaShell : Shell
     {
 
         //----------------------------------------------------------------------------------------------------------
 
+        public ZoaShell()
+        {
+            front_execution = null;
+        }
     }
 }

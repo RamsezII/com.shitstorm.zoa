@@ -21,7 +21,7 @@ namespace _ZOA_
             offset_top_h = 2,
             offset_bottom_h = 5;
 
-        public LintTheme lint_theme;
+        public LintTheme lint_theme = LintTheme.theme_dark;
         public Shell shell;
 
         LintedString GetShellPrefixe() => shell.status._value switch

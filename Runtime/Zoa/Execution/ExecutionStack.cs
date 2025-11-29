@@ -2,7 +2,7 @@
 
 namespace _ZOA_
 {
-    sealed class ExecutionStack
+    public sealed class ExecutionStack
     {
         internal readonly List<Executor> _stack = new();
         internal bool is_empty;
