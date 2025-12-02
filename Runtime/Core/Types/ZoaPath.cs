@@ -26,6 +26,7 @@
         public static implicit operator ZoaDPath(in string path) => new(path);
         public static implicit operator string(in ZoaDPath path) => path._path;
 
+#if UNITY_EDITOR
         [UnityEditor.MenuItem("Assets/" + nameof(_ZOA_) + "/" + nameof(_PathTest))]
         static void _PathTest()
         {
@@ -34,5 +35,6 @@
             string c = b.ToString();
             UnityEngine.Debug.Log(c);
         }
+#endif
     }
 }
