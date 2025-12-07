@@ -1,10 +1,10 @@
 ﻿namespace _ZOA_
 {
-    internal abstract class AST_Abstract
+    public abstract class AST_Abstract
     {
 
         //----------------------------------------------------------------------------------------------------------
 
-        public abstract void Execution(MemScope scope);
+        public abstract void OnExecution(in ExecutionQueue execution);
     }
 }

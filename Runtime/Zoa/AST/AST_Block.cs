@@ -5,8 +5,9 @@
 
         //----------------------------------------------------------------------------------------------------------
 
-        public override void Execution(MemScope scope)
+        public override void OnExecution(in ExecutionQueue execution)
         {
+            throw new System.NotImplementedException();
         }
     }
 }
