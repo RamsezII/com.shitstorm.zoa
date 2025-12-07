@@ -13,7 +13,7 @@ namespace _ZOA_
             in ExecutionStack exec_stack)
         {
             if (signal.arm_executors)
-                exec_stack.Push(new Executor("pair operator", expected_type)
+                exec_stack._stack.Add(new Executor("pair operator", expected_type)
                 {
                     action_SIG_EXE = exe =>
                     {

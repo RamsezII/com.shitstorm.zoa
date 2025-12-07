@@ -26,11 +26,11 @@ namespace _ZOA_
                     _ => 0,
                 };
 
-                Executor term1 = exec_stack.Peek();
+                Executor term1 = exec_stack._stack[^1];
 
                 if (TryParseTerm(signal, scope, expected_type, exec_stack))
                 {
-                    Executor term2 = exec_stack.Peek();
+                    Executor term2 = exec_stack._stack[^1];
                     if (TryParsePair(signal, expected_type, code, term1, term2, exec_stack))
                         return true;
                 }

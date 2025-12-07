@@ -60,10 +60,10 @@ namespace _ZOA_
                 }
                 else
                 {
-                    var factor = exec_stack.Peek();
+                    var factor = exec_stack._stack[^1];
 
                     Executor executor = new("unary", expected_type);
-                    exec_stack.Push(executor);
+                    exec_stack._stack.Add(executor);
 
                     if (signal.arm_executors)
                         executor.action_SIG_EXE = exe =>

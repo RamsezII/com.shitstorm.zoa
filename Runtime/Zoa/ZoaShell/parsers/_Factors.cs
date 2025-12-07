@@ -18,9 +18,9 @@ namespace _ZOA_
                     if (TryParsePath(signal, FS_TYPES.BOTH, false, out string fpath))
                     {
                         if (signal.arm_executors)
-                            exec_stack.Push(Executor.Literal((ZoaFPath)fpath));
+                            exec_stack._stack.Add(Executor.Literal((ZoaFPath)fpath));
                         else
-                            exec_stack.Push(new Executor("file path", T_fpath));
+                            exec_stack._stack.Add(new Executor("file path", T_fpath));
                         return true;
                     }
 
@@ -29,9 +29,9 @@ namespace _ZOA_
                     if (TryParsePath(signal, FS_TYPES.FILE, false, out string fpath))
                     {
                         if (signal.arm_executors)
-                            exec_stack.Push(Executor.Literal((ZoaFPath)fpath));
+                            exec_stack._stack.Add(Executor.Literal((ZoaFPath)fpath));
                         else
-                            exec_stack.Push(new Executor("file path", T_fpath));
+                            exec_stack._stack.Add(new Executor("file path", T_fpath));
                         return true;
                     }
 
@@ -40,9 +40,9 @@ namespace _ZOA_
                     if (TryParsePath(signal, FS_TYPES.DIRECTORY, false, out string dpath))
                     {
                         if (signal.arm_executors)
-                            exec_stack.Push(Executor.Literal((ZoaDPath)dpath));
+                            exec_stack._stack.Add(Executor.Literal((ZoaDPath)dpath));
                         else
-                            exec_stack.Push(new Executor("directory path", T_dpath));
+                            exec_stack._stack.Add(new Executor("directory path", T_dpath));
                         return true;
                     }
 
@@ -87,40 +87,40 @@ namespace _ZOA_
                         case "true":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
                             if (signal.arm_executors)
-                                exec_stack.Push(Executor.Literal(true));
+                                exec_stack._stack.Add(Executor.Literal(true));
                             else
-                                exec_stack.Push(new Executor("bool", T_bool));
+                                exec_stack._stack.Add(new Executor("bool", T_bool));
                             return true;
 
                         case "false":
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.constants, true);
                             if (signal.arm_executors)
-                                exec_stack.Push(Executor.Literal(false));
+                                exec_stack._stack.Add(Executor.Literal(false));
                             else
-                                exec_stack.Push(new Executor("condition", T_bool));
+                                exec_stack._stack.Add(new Executor("condition", T_bool));
                             return true;
 
                         default:
                             if (arg[^1] == 'f' && Util.TryParseFloat(arg[..^1], out float _float))
                             {
                                 if (signal.arm_executors)
-                                    exec_stack.Push(Executor.Literal(_float));
+                                    exec_stack._stack.Add(Executor.Literal(_float));
                                 else
-                                    exec_stack.Push(new Executor("number", T_float));
+                                    exec_stack._stack.Add(new Executor("number", T_float));
                             }
                             else if (int.TryParse(arg, out int _int))
                             {
                                 if (signal.arm_executors)
-                                    exec_stack.Push(Executor.Literal(_int));
+                                    exec_stack._stack.Add(Executor.Literal(_int));
                                 else
-                                    exec_stack.Push(new Executor("int", T_int));
+                                    exec_stack._stack.Add(new Executor("int", T_int));
                             }
                             else if (Util.TryParseFloat(arg, out _float))
                             {
                                 if (signal.arm_executors)
-                                    exec_stack.Push(Executor.Literal(_float));
+                                    exec_stack._stack.Add(Executor.Literal(_float));
                                 else
-                                    exec_stack.Push(new Executor("float", T_float));
+                                    exec_stack._stack.Add(new Executor("float", T_float));
                             }
                             else
                             {

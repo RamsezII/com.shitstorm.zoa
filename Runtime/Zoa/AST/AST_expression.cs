@@ -9,13 +9,4 @@
         {
         }
     }
-
-    internal class AST_expression_bool : AST_expression
-    {
-
-        //----------------------------------------------------------------------------------------------------------
-        public override void Execution(MemScope scope)
-        {
-        }
-    }
 }

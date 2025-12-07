@@ -66,11 +66,11 @@ namespace _ZOA_
 
                         if (TryParseExpression(signal, scope, false, var_cell.type, exec_stack))
                         {
-                            Executor expr_exe = exec_stack.Peek();
+                            Executor expr_exe = exec_stack._stack[^1];
                             Type expr_type = expr_exe.type;
 
                             if (signal.arm_executors)
-                                exec_stack.Push(new Executor("assignation", var_cell.type)
+                                exec_stack._stack.Add(new Executor("assignation", var_cell.type)
                                 {
                                     action_SIG_EXE = exe =>
                                     {

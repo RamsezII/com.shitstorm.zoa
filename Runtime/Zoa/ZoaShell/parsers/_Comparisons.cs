@@ -31,10 +31,10 @@ namespace _ZOA_
 
                     signal.reader.LintToThisPosition(signal.reader.lint_theme.operators, true);
 
-                    Executor addsub1 = exec_stack.Peek();
+                    Executor addsub1 = exec_stack._stack[^1];
                     if (TryParseAddSub(signal, scope, expected_type ?? T_object, exec_stack))
                     {
-                        Executor addsub2 = exec_stack.Peek();
+                        Executor addsub2 = exec_stack._stack[^1];
                         if (TryParsePair(signal, T_object, code, addsub1, addsub2, exec_stack))
                             return true;
                     }

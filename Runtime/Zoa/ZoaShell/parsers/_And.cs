@@ -16,10 +16,10 @@ namespace _ZOA_
                     return true;
                 else
                 {
-                    Executor and1 = exec_stack.Peek();
+                    Executor and1 = exec_stack._stack[^1];
                     if (TryParseAnd(signal, scope, expected_type, exec_stack))
                     {
-                        Executor and2 = exec_stack.Peek();
+                        Executor and2 = exec_stack._stack[^1];
                         if (TryParsePair(signal, T_bool, OP_FLAGS.AND, and1, and2, exec_stack))
                             return true;
                     }

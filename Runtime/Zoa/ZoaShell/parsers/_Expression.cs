@@ -42,7 +42,7 @@ namespace _ZOA_
             else
             {
                 // cond output
-                Executor exe_cond = exec_stack.Peek();
+                Executor exe_cond = exec_stack._stack[^1];
                 // check if is bool
 
                 ExecutionStack exec_stack_yes = new();
@@ -51,7 +51,7 @@ namespace _ZOA_
                     signal.reader.Stderr($"expected expression after ternary operator '?'");
                 else
                 {
-                    Executor exe_yes = exec_stack.Peek();
+                    Executor exe_yes = exec_stack._stack[^1];
 
                     if (!signal.reader.TryReadChar_match(':', lint: signal.reader.lint_theme.operators))
                         signal.reader.Stderr($"expected ternary operator delimiter ':'");
@@ -63,7 +63,7 @@ namespace _ZOA_
                             signal.reader.Stderr($"expected second expression after ternary operator ':'");
                         else if (signal.arm_executors)
                         {
-                            Executor exe_no = exec_stack.Peek();
+                            Executor exe_no = exec_stack._stack[^1];
                             Executor exe_tern_eval = null;
 
                             exe_tern_eval = new("ternary evaluator", expected_type)
@@ -82,13 +82,13 @@ namespace _ZOA_
                                     {
                                         action_SIG_EXE = exe =>
                                         {
-                                            exe.output = exec_stack_final.Peek().output;
+                                            exe.output = exec_stack_final._stack[^1].output;
                                         },
                                     };
                                     exec_stack._stack.Insert(insert_index, exe_tern_output);
                                 }
                             };
-                            exec_stack.Push(exe_tern_eval);
+                            exec_stack._stack.Add(exe_tern_eval);
                         }
                     }
                 }

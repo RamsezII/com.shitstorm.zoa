@@ -56,7 +56,7 @@ namespace _ZOA_
                                 Executor ex = signal.arm_executors
                                     ? Executor.Literal(current_fragment)
                                     : new("string", typeof(string));
-                                exec_stack.Push(ex);
+                                exec_stack._stack.Add(ex);
                                 exe_list.Add(ex);
                             }
 
@@ -70,7 +70,7 @@ namespace _ZOA_
                                         sb.Append(exe_list[i].output);
                                     exe.output = sb.ToString();
                                 };
-                            exec_stack.Push(executor);
+                            exec_stack._stack.Add(executor);
                         }
                         return true;
 
@@ -85,13 +85,13 @@ namespace _ZOA_
                                 Executor ex = signal.arm_executors
                                     ? Executor.Literal(current_fragment)
                                     : new("string", typeof(string));
-                                exec_stack.Push(ex);
+                                exec_stack._stack.Add(ex);
                                 exe_list.Add(ex);
                                 current_fragment = string.Empty;
                             }
 
                             if (TryParseExpression(signal, scope, false, T_object, exec_stack))
-                                exe_list.Add(exec_stack.Peek());
+                                exe_list.Add(exec_stack._stack[^1]);
                             else
                             {
                                 signal.reader.Stderr($"expected expression after '{{'.");

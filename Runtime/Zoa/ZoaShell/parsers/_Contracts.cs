@@ -33,7 +33,7 @@ namespace _ZOA_
                         foreach (var pair in contract.options)
                             if (pair.Value != null)
                                 if (TryParseExpression(signal, scope, false, pair.Value, exec_stack))
-                                    opts_exe.Add(pair.Key.long_name, exec_stack.Peek());
+                                    opts_exe.Add(pair.Key.long_name, exec_stack._stack[^1]);
                                 else
                                 {
                                     signal.reader.Stderr($"could not parse expression for option {(pair.Key.short_name != '\0' ? $"\"-{pair.Key.short_name}\"" : string.Empty)}/\"--{pair.Key.long_name}\"");
@@ -61,7 +61,7 @@ namespace _ZOA_
                         {
                             Type arg_type = contract.parameters._list[i];
                             if (TryParseExpression(signal, scope, true, arg_type, exec_stack))
-                                prms_exe.Add(exec_stack.Peek());
+                                prms_exe.Add(exec_stack._stack[^1]);
                             else
                             {
                                 signal.reader.Stderr($"could not parse argument[{i}]");
@@ -90,7 +90,7 @@ namespace _ZOA_
 
                     if (args_b)
                     {
-                        exec_stack.Push(args_exe);
+                        exec_stack._stack.Add(args_exe);
                         if (signal.arm_executors)
                             args_exe.action_SIG_EXE = exe =>
                             {
@@ -108,7 +108,7 @@ namespace _ZOA_
                     }
 
                     var cont_exe = new Executor(contract.name, contract.output_type);
-                    exec_stack.Push(cont_exe);
+                    exec_stack._stack.Add(cont_exe);
 
                     if (signal.arm_executors)
                     {
