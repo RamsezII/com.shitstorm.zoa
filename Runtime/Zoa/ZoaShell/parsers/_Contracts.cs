@@ -13,8 +13,8 @@ namespace _ZOA_
             in ExecutionStack exec_stack
         )
         {
-            if (signal.reader.TryReadString_matches_out(out string cont_name, as_function_argument: false, lint: signal.reader.lint_theme.contracts, matches: Contract.contracts.Keys.ToArray()))
-                if (!Contract.contracts.TryGetValue(cont_name, out Contract contract))
+            if (signal.reader.TryReadString_matches_out(out string cont_name, as_function_argument: false, lint: signal.reader.lint_theme.contracts, matches: ZoaContract.contracts.Keys.ToArray()))
+                if (!ZoaContract.contracts.TryGetValue(cont_name, out ZoaContract contract))
                 {
                     signal.reader.Stderr($"no contract named '{cont_name}'.");
                     goto failure;

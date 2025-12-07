@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace _ZOA_
 {
-    public sealed class Contract
+    public sealed class ZoaContract
     {
         public readonly string name;
         public readonly Type output_type;
@@ -13,7 +13,7 @@ namespace _ZOA_
         internal readonly Action<Executor, MemScope, Dictionary<string, object>, List<object>> action_SIG_EXE;
         internal readonly Func<Executor, MemScope, Dictionary<string, object>, List<object>, IEnumerator<ExecutionOutput>> routine_SIG_EXE, routine_SIG_ALL;
 
-        internal static readonly Dictionary<string, Contract> contracts = new(StringComparer.OrdinalIgnoreCase);
+        internal static readonly Dictionary<string, ZoaContract> contracts = new(StringComparer.OrdinalIgnoreCase);
 
         //----------------------------------------------------------------------------------------------------------
 
@@ -25,14 +25,14 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static void AddContract(in Contract contract, params string[] aliases)
+        public static void AddContract(in ZoaContract contract, params string[] aliases)
         {
             contracts.Add(contract.name, contract);
             for (int i = 0; i < aliases.Length; i++)
                 contracts.Add(aliases[i], contract);
         }
 
-        public Contract(
+        public ZoaContract(
             in string name,
             in Type output_type,
             in Dictionary<(char, string), Type> options = null,

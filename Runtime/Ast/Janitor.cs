@@ -4,7 +4,7 @@ namespace _ZOA_
 {
     public sealed class Janitor
     {
-        internal readonly List<AST_Abstract> ast_stack = new();
+        internal readonly List<AstContract> contract_stack = new();
         internal readonly MemStack mem_stack = new();
         internal int pointer;
 
@@ -32,13 +32,9 @@ namespace _ZOA_
                 current_executor.signal = null;
             }
 
-            if (pointer < ast_stack.Count)
+            if (pointer < contract_stack.Count)
             {
-                AST_Abstract ast = ast_stack[pointer];
-                ast.Execution(this);
-
-                //executor.signal = signal;
-                //executor.signal = null;
+                AstContract contract = contract_stack[pointer];
             }
         }
     }

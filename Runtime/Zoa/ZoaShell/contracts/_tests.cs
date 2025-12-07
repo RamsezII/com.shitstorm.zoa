@@ -7,7 +7,7 @@ namespace _ZOA_
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void CMD_tests()
         {
-            Contract.AddContract(new(
+            ZoaContract.AddContract(new(
                 name: "test",
                 output_type: T_bool,
                 parameters: new ZoaTypes(T_bool),

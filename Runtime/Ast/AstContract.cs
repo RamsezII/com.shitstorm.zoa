@@ -1,10 +1,9 @@
 ﻿namespace _ZOA_
 {
-    internal class AST_expression : AST_Abstract
+    public abstract class AstContract
     {
 
         //----------------------------------------------------------------------------------------------------------
-
 
     }
 }

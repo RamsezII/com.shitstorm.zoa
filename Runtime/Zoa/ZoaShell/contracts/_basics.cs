@@ -8,7 +8,7 @@ namespace _ZOA_
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void CMD_basics()
         {
-            Contract.AddContract(new(
+            ZoaContract.AddContract(new(
                 name: "echo",
                 output_type: null,
                 parameters: new ZoaTypes(T_object),
@@ -19,7 +19,7 @@ namespace _ZOA_
                 }
             ));
 
-            Contract.AddContract(new(
+            ZoaContract.AddContract(new(
                 name: "wait",
                 output_type: null,
                 parameters: new ZoaTypes(T_float),
@@ -44,7 +44,7 @@ namespace _ZOA_
                 }
             ));
 
-            Contract.AddContract(new(
+            ZoaContract.AddContract(new(
                 name: "stdin",
                 output_type: T_string,
                 parameters: new ZoaTypes(T_string),
