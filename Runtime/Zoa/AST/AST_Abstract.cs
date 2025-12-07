@@ -5,6 +5,8 @@
 
         //----------------------------------------------------------------------------------------------------------
 
-        public abstract void OnExecution(in ExecutionQueue execution);
+        public virtual void Execution(in Janitor janitor)
+        {
+        }
     }
 }
