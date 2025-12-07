@@ -40,7 +40,6 @@ namespace _ZOA_
                             timer += Time.unscaledDeltaTime;
                             yield return new(progress: timer / time);
                         }
-                        exe.signal.Stdout("wait end", null);
                     }
                 }
             ));

@@ -70,7 +70,7 @@ namespace _ZOA_
                             Type expr_type = expr_exe.type;
 
                             if (signal.arm_executors)
-                                exec_stack.Push(new("assignation", var_cell.type)
+                                exec_stack.Push(new Executor("assignation", var_cell.type)
                                 {
                                     action_SIG_EXE = exe =>
                                     {

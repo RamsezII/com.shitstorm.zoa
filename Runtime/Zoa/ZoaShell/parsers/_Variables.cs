@@ -29,7 +29,7 @@ namespace _ZOA_
                     signal.reader.LintToThisPosition(signal.reader.lint_theme.variables, true);
 
                     if (signal.arm_executors)
-                        exec_stack.Push(new("variable", var_cell.type)
+                        exec_stack.Push(new Executor("variable", var_cell.type)
                         {
                             action_SIG_EXE = exe => exe.output = var_cell.value,
                         });
