@@ -16,9 +16,9 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
-        protected override void Awake()
+        protected override void OnAwake()
         {
-            base.Awake();
+            base.OnAwake();
             trad_title.SetTrad("ZOA");
         }
     }
