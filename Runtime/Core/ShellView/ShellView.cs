@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace _ZOA_
 {
-    public abstract partial class ShellView : MonoBehaviour
+    public abstract partial class ShellView : MonoBehaviour, SguiContextClick.ILeftClickable
     {
         public ShellField stdout_field, stdin_field;
         public TextMeshProUGUI tmp_progress;
@@ -97,6 +97,44 @@ namespace _ZOA_
 
             ResetStdin();
             RefreshStdout();
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+
+        public virtual void OnSguiContextClick(SguiContextClick_List context_list)
+        {
+            context_list.AddButton();
+            context_list.AddButton();
+            context_list.AddButton();
+            context_list.AddButton();
+
+            var button = context_list.AddButton();
+            button.trad.SetTrad("1");
+            button.SetupSublist(sublist =>
+            {
+                sublist.AddButton();
+                sublist.AddButton();
+                
+                var sbutton = sublist.AddButton();
+                sbutton.trad.SetTrad("2");
+
+                sbutton.SetupSublist(ssublist =>
+                {
+                    ssublist.AddButton();
+                    ssublist.AddButton();
+                    ssublist.AddButton();
+                    ssublist.AddButton();
+                    ssublist.AddButton();
+                    ssublist.AddButton();
+                    ssublist.AddButton();
+                    ssublist.AddButton();
+                });
+
+                sublist.AddButton();
+            });
+
+            context_list.AddButton();
+            context_list.AddButton();
         }
 
         //----------------------------------------------------------------------------------------------------------
