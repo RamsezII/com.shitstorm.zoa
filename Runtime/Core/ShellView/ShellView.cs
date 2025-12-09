@@ -63,7 +63,7 @@ namespace _ZOA_
         {
             stdout_field.rT.anchoredPosition = new Vector2(0, -offset_top_h);
             stdin_field.onValidateInput += OnValidateStdin_char;
-            stdin_field.onValueChanged.AddListener(OnStdinChanged);
+            stdin_field.onValueChanged += OnStdinChanged;
             stdin_field.onSelect.AddListener(OnSelectStdin);
             stdin_field.onDeselect.AddListener(OnDeselectStdin);
 
