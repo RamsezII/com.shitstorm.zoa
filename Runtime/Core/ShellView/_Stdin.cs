@@ -71,7 +71,7 @@ namespace _ZOA_
 
         protected virtual void OnSelectStdin(string text)
         {
-            IMGUI_global.instance.users_inputs.AddElement(OnImguiInputs, this);
+            IMGUI_global.instance.inputs_users.AddElement(OnImguiInputs);
             NUCLEOR.delegates.LateUpdate_onEndOfFrame_once += () =>
             {
                 int min_pos = shell.prefixe._value.text?.Length ?? 0;
@@ -82,7 +82,7 @@ namespace _ZOA_
 
         protected virtual void OnDeselectStdin(string arg0)
         {
-            IMGUI_global.instance.users_inputs.RemoveKeysByValue(this);
+            IMGUI_global.instance.inputs_users.RemoveElement(OnImguiInputs);
         }
 
         bool GetStdin(out string stdin, out int cursor_i)
