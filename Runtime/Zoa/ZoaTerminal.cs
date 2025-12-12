@@ -1,3 +1,4 @@
+using _ARK_;
 using _SGUI_;
 using UnityEngine;
 
@@ -11,7 +12,12 @@ namespace _ZOA_
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void OnAfterSceneLoad()
         {
-            OSView.instance.GetSoftwareButton<ZoaTerminal>(force: true);
+            var button = OSView.instance.GetSoftwareButton<ZoaTerminal>(force: true);
+            ArkShortcuts.AddShortcut(
+                shortcutName: "Zoa",
+                nameof_button: "o",
+                action: () => button.InstantiateSoftware()
+            );
         }
 
         //----------------------------------------------------------------------------------------------------------
