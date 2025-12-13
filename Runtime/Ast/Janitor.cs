@@ -1,41 +1,52 @@
-﻿using System.Collections.Generic;
+﻿using _UTIL_;
+using System.Collections.Generic;
 
-namespace _ZOA_
+namespace _ZOA_.Ast
 {
-    public sealed class Janitor
+    public sealed class Janitor : Disposable
     {
-        internal readonly List<AstContract> contract_stack = new();
-        internal readonly MemStack mem_stack = new();
-        internal int pointer;
-
-        Executor current_executor;
-        IEnumerator<ExecutionOutput> routine_SIG_EXE, routine_SIG_ALL;
+        readonly IEnumerator<ExecutionOutput> routine;
+        internal Signal signal;
 
         //----------------------------------------------------------------------------------------------------------
 
-        public void OnSignal(in Signal signal)
+        internal Janitor(in AstAsbtract ast)
         {
-            if (routine_SIG_EXE != null)
-            {
-                current_executor.signal = signal;
-                if (signal.flags.HasFlag(SIG_FLAGS.TICK))
-                    if (!routine_SIG_EXE.MoveNext())
-                        routine_SIG_EXE = null;
-                current_executor.signal = null;
-            }
+            routine = EExecution(ast);
+        }
 
-            if (routine_SIG_ALL != null)
-            {
-                current_executor.signal = signal;
-                if (!routine_SIG_ALL.MoveNext())
-                    routine_SIG_ALL = null;
-                current_executor.signal = null;
-            }
+        //----------------------------------------------------------------------------------------------------------
 
-            if (pointer < contract_stack.Count)
+        IEnumerator<ExecutionOutput> EExecution(AstAsbtract ast)
+        {
+            MemStack mem_stack = new();
+            yield break;
+        }
+
+        public bool OnSignal(in Signal signal, out ExecutionOutput output)
+        {
+            if (!Disposed)
             {
-                AstContract contract = contract_stack[pointer];
+                this.signal = signal;
+                if (routine.MoveNext())
+                {
+                    output = routine.Current;
+                    this.signal = null;
+                    return true;
+                }
+                this.signal = null;
+                Dispose();
             }
+            output = default;
+            return false;
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+
+        protected override void OnDispose()
+        {
+            base.OnDispose();
+            routine?.Dispose();
         }
     }
 }

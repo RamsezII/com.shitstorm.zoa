@@ -14,7 +14,6 @@ namespace _ZOA_
         public object output;
         internal bool isDone;
         public Signal signal;
-        internal readonly MemStack mem_stack;
 
         public string DisplayName => $"ex {{ {nameof(name)}: {name}, {nameof(type)}: {type}, {nameof(output)}: {output} }}";
         public override string ToString() => DisplayName;

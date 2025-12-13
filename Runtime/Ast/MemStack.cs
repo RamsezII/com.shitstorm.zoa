@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace _ZOA_
+namespace _ZOA_.Ast
 {
     public sealed class MemStack
     {
