@@ -12,7 +12,7 @@ namespace _ZOA_
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void OnAfterSceneLoad()
         {
-            var button = OSView.instance.GetSoftwareButton<ZoaTerminal>(force: true);
+            var button = OSView.instance.AddSoftwareButton<ZoaTerminal>(new("ZoaTerminal"));
             ArkShortcuts.AddShortcut(
                 shortcutName: "Zoa",
                 nameof_button: "o",
