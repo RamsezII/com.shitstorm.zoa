@@ -9,8 +9,8 @@ namespace _ZOA_
         {
             ZoaContract.AddContract(new(
                 name: "test",
-                output_type: T_bool,
-                parameters: new ZoaTypes(T_bool),
+                output_type: typeof(bool),
+                parameters: new ZoaTypes(typeof(bool)),
                 action_SIG_EXE: static (exe, scope, opts, args) =>
                 {
                     bool a = (bool)args[0];

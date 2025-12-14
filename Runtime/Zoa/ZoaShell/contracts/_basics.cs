@@ -11,7 +11,7 @@ namespace _ZOA_
             ZoaContract.AddContract(new(
                 name: "echo",
                 output_type: null,
-                parameters: new ZoaTypes(T_object),
+                parameters: new ZoaTypes(typeof(object)),
                 action_SIG_EXE: static (exe, scope, opts, args) =>
                 {
                     object msg = args[0];
@@ -22,7 +22,7 @@ namespace _ZOA_
             ZoaContract.AddContract(new(
                 name: "wait",
                 output_type: null,
-                parameters: new ZoaTypes(T_float),
+                parameters: new ZoaTypes(typeof(float)),
                 routine_SIG_EXE: static (exe, scope, opts, prms) =>
                 {
                     return ERoutine(exe, prms);
@@ -46,8 +46,8 @@ namespace _ZOA_
 
             ZoaContract.AddContract(new(
                 name: "stdin",
-                output_type: T_string,
-                parameters: new ZoaTypes(T_string),
+                output_type: typeof(string),
+                parameters: new ZoaTypes(typeof(string)),
                 routine_SIG_ALL: static (exe, scope, opts, prms) =>
                 {
                     return ERoutine(exe, prms);

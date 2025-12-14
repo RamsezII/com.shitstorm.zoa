@@ -20,7 +20,7 @@ namespace _ZOA_
                     return true;
                 else
                 {
-                    signal.reader.Stderr($"could not parse factor");
+                    signal.reader.Error($"could not parse factor");
                     read_old = signal.reader.read_i;
                     goto failure;
                 }
@@ -40,22 +40,22 @@ namespace _ZOA_
                     read_old = signal.reader.read_i;
                     if (!signal.reader.TryReadArgument(out string var_name, false, signal.reader.lint_theme.variables, skippables: null))
                     {
-                        signal.reader.Stderr($"expected variable after increment operator '{unary_operator}{unary_operator}'.");
+                        signal.reader.Error($"expected variable after increment operator '{unary_operator}{unary_operator}'.");
                         goto failure;
                     }
                     else if (!scope.TryGetCell(var_name, out MemCell var_cell))
                     {
-                        signal.reader.Stderr($"no variable named '{var_name}'.");
+                        signal.reader.Error($"no variable named '{var_name}'.");
                         goto failure;
                     }
 
                     Debug.LogError("TODO ++i");
-                    signal.reader.Stderr($"++i TODO");
+                    signal.reader.Error($"++i TODO");
                     goto failure;
                 }
                 else if (!TryParseFactor(signal, scope, expected_type, exec_stack))
                 {
-                    signal.reader.Stderr($"expected factor after '{unary_operator}'.");
+                    signal.reader.Error($"expected factor after '{unary_operator}'.");
                     return false;
                 }
                 else

@@ -20,16 +20,6 @@ namespace _ZOA_
         public readonly MemScope mem_scope = new();
         public Action<object, string> on_output;
 
-        public static readonly Type
-            T_object = typeof(object),
-            T_bool = typeof(bool),
-            T_int = typeof(int),
-            T_float = typeof(float),
-            T_string = typeof(string),
-            T_path = typeof(ZoaPath),
-            T_fpath = typeof(ZoaFPath),
-            T_dpath = typeof(ZoaDPath);
-
         //----------------------------------------------------------------------------------------------------------
 
         protected Shell()

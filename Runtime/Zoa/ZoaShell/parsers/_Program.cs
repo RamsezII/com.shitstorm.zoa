@@ -28,7 +28,7 @@ namespace _ZOA_
 
             if (signal.reader.TryPeekChar_out(out char peek, out _))
             {
-                signal.reader.Stderr($"could not parse everything ({nameof(peek)}: '{peek}').");
+                signal.reader.Error($"could not parse everything ({nameof(peek)}: '{peek}').");
                 goto failure;
             }
 

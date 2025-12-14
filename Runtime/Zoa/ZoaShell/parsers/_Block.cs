@@ -22,7 +22,7 @@
                 if (signal.reader.TryReadChar_match('}', lint: signal.reader.CloseBraquetLint()))
                     return true;
                 else
-                    signal.reader.Stderr($"expected closing bracket '}}'.");
+                    signal.reader.Error($"expected closing bracket '}}'.");
             }
             else if (TryParseInstruction(signal, scope, exec_stack))
                 return true;

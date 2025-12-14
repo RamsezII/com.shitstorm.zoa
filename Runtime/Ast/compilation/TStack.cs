@@ -1,6 +1,8 @@
-﻿namespace _ZOA_.Ast
+﻿using System;
+
+namespace _ZOA_.Ast.compilation
 {
-    public sealed class Executor
+    public sealed class TStack : MStack<Type>
     {
 
         //----------------------------------------------------------------------------------------------------------

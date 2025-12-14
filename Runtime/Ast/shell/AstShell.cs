@@ -1,10 +1,11 @@
-﻿using _ZOA_.Ast;
+﻿using _ZOA_.Ast.compilation;
+using _ZOA_.Ast.execution;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace _ZOA_
 {
-    internal sealed partial class AstShell : Shell
+    internal sealed class AstShell : Shell
     {
         /*
 
@@ -55,21 +56,18 @@ namespace _ZOA_
             }
             else
             {
-                AstBlock ast = new();
-                if (ast.TryParse(signal))
-                    if (signal.flags.HasFlag(SIG_FLAGS.SUBMIT))
+                AstProgram program = new(signal);
+                if (signal.flags.HasFlag(SIG_FLAGS.SUBMIT))
+                    if (signal.reader.sig_error != null)
                     {
-                        if (signal.reader.sig_error == null)
-                        {
-                            front_janitor = new(ast);
-                            status.Value = CMD_STATUS.BLOCKED;
-                        }
-                        else
-                        {
-                            signal.reader.LocalizeError();
-                            Debug.LogError(signal.reader.sig_long_error);
-                            status.Value = CMD_STATUS.WAIT_FOR_STDIN;
-                        }
+                        signal.reader.LocalizeError();
+                        Debug.LogError(signal.reader.sig_long_error);
+                        status.Value = CMD_STATUS.WAIT_FOR_STDIN;
+                    }
+                    else
+                    {
+                        front_janitor = new(program);
+                        status.Value = CMD_STATUS.BLOCKED;
                     }
             }
         }

@@ -1,25 +1,34 @@
 ﻿using _UTIL_;
+using _ZOA_.Ast.compilation;
 using System.Collections.Generic;
 
-namespace _ZOA_.Ast
+namespace _ZOA_.Ast.execution
 {
     public sealed class Janitor : Disposable
     {
         readonly IEnumerator<ExecutionOutput> routine;
         internal Signal signal;
+        internal VScope vscope;
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal Janitor(in AstAsbtract ast)
+        internal Janitor(in AstProgram program)
         {
-            routine = EExecution(ast);
+            routine = EExecution(program);
         }
 
         //----------------------------------------------------------------------------------------------------------
 
-        IEnumerator<ExecutionOutput> EExecution(AstAsbtract ast)
+        IEnumerator<ExecutionOutput> EExecution(AstProgram program)
         {
-            MemStack mem_stack = new();
+            VStack vstack = new();
+            VScope vscope = new(parent: null);
+
+            for (int i = 0; i < program.asts.Count; ++i)
+            {
+                var block = program.asts[i];
+            }
+
             yield break;
         }
 

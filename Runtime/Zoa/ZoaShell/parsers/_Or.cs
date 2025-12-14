@@ -19,11 +19,11 @@ namespace _ZOA_
                     if (TryParseOr(signal, scope, expected_type, exec_stack))
                     {
                         Executor or2 = exec_stack._stack[^1];
-                        if (TryParsePair(signal, T_bool, OP_FLAGS.OR, or1, or2, exec_stack))
+                        if (TryParsePair(signal, typeof(bool), OP_FLAGS.OR, or1, or2, exec_stack))
                             return true;
                     }
                     else
-                        signal.reader.Stderr($"expected expression after '{op_name}' operator.");
+                        signal.reader.Error($"expected expression after '{op_name}' operator.");
                 }
                 else
                     return true;

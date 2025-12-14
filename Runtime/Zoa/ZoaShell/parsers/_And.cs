@@ -20,12 +20,12 @@ namespace _ZOA_
                     if (TryParseAnd(signal, scope, expected_type, exec_stack))
                     {
                         Executor and2 = exec_stack._stack[^1];
-                        if (TryParsePair(signal, T_bool, OP_FLAGS.AND, and1, and2, exec_stack))
+                        if (TryParsePair(signal, typeof(bool), OP_FLAGS.AND, and1, and2, exec_stack))
                             return true;
                     }
                     else
                     {
-                        signal.reader.Stderr($"expected expression after '{op_name}' operator.");
+                        signal.reader.Error($"expected expression after '{op_name}' operator.");
                         return false;
                     }
                 }

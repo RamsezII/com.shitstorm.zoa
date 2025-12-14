@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace _ZOA_.Ast
+namespace _ZOA_.Ast.execution
 {
-    public sealed class MemStack
+    public sealed class VStack
     {
         internal readonly List<MemCell> _stack = new();
 

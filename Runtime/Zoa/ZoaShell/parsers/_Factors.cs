@@ -14,35 +14,35 @@ namespace _ZOA_
         )
         {
             if (signal.reader.sig_error == null)
-                if (expected_type == T_path)
+                if (expected_type == typeof(CobraPath))
                     if (TryParsePath(signal, FS_TYPES.BOTH, false, out string fpath))
                     {
                         if (signal.arm_executors)
-                            exec_stack._stack.Add(Executor.Literal((ZoaFPath)fpath));
+                            exec_stack._stack.Add(Executor.Literal((CobraFPath)fpath));
                         else
-                            exec_stack._stack.Add(new Executor("file path", T_fpath));
+                            exec_stack._stack.Add(new Executor("file path", typeof(CobraPath)));
                         return true;
                     }
 
             if (signal.reader.sig_error == null)
-                if (expected_type == T_fpath)
+                if (expected_type == typeof(CobraFPath))
                     if (TryParsePath(signal, FS_TYPES.FILE, false, out string fpath))
                     {
                         if (signal.arm_executors)
-                            exec_stack._stack.Add(Executor.Literal((ZoaFPath)fpath));
+                            exec_stack._stack.Add(Executor.Literal((CobraFPath)fpath));
                         else
-                            exec_stack._stack.Add(new Executor("file path", T_fpath));
+                            exec_stack._stack.Add(new Executor("file path", typeof(CobraFPath)));
                         return true;
                     }
 
             if (signal.reader.sig_error == null)
-                if (expected_type == T_dpath)
+                if (expected_type == typeof(CobraDPath))
                     if (TryParsePath(signal, FS_TYPES.DIRECTORY, false, out string dpath))
                     {
                         if (signal.arm_executors)
-                            exec_stack._stack.Add(Executor.Literal((ZoaDPath)dpath));
+                            exec_stack._stack.Add(Executor.Literal((CobraDPath)dpath));
                         else
-                            exec_stack._stack.Add(new Executor("directory path", T_dpath));
+                            exec_stack._stack.Add(new Executor("directory path", typeof(CobraDPath)));
                         return true;
                     }
 
@@ -50,14 +50,14 @@ namespace _ZOA_
                 if (signal.reader.TryReadChar_match('('))
                 {
                     signal.reader.LintOpeningBraquet();
-                    if (!TryParseExpression(signal, scope, false, T_object, exec_stack))
+                    if (!TryParseExpression(signal, scope, false, typeof(object), exec_stack))
                     {
-                        signal.reader.Stderr("expected expression inside factor parenthesis.");
+                        signal.reader.Error("expected expression inside factor parenthesis.");
                         goto failure;
                     }
                     else if (!signal.reader.TryReadChar_match(')', lint: signal.reader.CloseBraquetLint()))
                     {
-                        signal.reader.Stderr($"expected closing parenthesis ')' after factor.");
+                        signal.reader.Error($"expected closing parenthesis ')' after factor.");
                         --signal.reader.read_i;
                         goto failure;
                     }
@@ -89,7 +89,7 @@ namespace _ZOA_
                             if (signal.arm_executors)
                                 exec_stack._stack.Add(Executor.Literal(true));
                             else
-                                exec_stack._stack.Add(new Executor("bool", T_bool));
+                                exec_stack._stack.Add(new Executor("bool", typeof(bool)));
                             return true;
 
                         case "false":
@@ -97,7 +97,7 @@ namespace _ZOA_
                             if (signal.arm_executors)
                                 exec_stack._stack.Add(Executor.Literal(false));
                             else
-                                exec_stack._stack.Add(new Executor("condition", T_bool));
+                                exec_stack._stack.Add(new Executor("condition", typeof(bool)));
                             return true;
 
                         default:
@@ -106,25 +106,25 @@ namespace _ZOA_
                                 if (signal.arm_executors)
                                     exec_stack._stack.Add(Executor.Literal(_float));
                                 else
-                                    exec_stack._stack.Add(new Executor("number", T_float));
+                                    exec_stack._stack.Add(new Executor("number", typeof(float)));
                             }
                             else if (int.TryParse(arg, out int _int))
                             {
                                 if (signal.arm_executors)
                                     exec_stack._stack.Add(Executor.Literal(_int));
                                 else
-                                    exec_stack._stack.Add(new Executor("int", T_int));
+                                    exec_stack._stack.Add(new Executor("int", typeof(int)));
                             }
                             else if (Util.TryParseFloat(arg, out _float))
                             {
                                 if (signal.arm_executors)
                                     exec_stack._stack.Add(Executor.Literal(_float));
                                 else
-                                    exec_stack._stack.Add(new Executor("float", T_float));
+                                    exec_stack._stack.Add(new Executor("float", typeof(float)));
                             }
                             else
                             {
-                                signal.reader.Stderr($"unrecognized literal : '{arg}'.");
+                                signal.reader.Error($"unrecognized literal : '{arg}'.");
                                 goto failure;
                             }
                             signal.reader.LintToThisPosition(signal.reader.lint_theme.literal, true);

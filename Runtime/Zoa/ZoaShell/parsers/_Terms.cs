@@ -35,7 +35,7 @@ namespace _ZOA_
                         return true;
                 }
                 else
-                    signal.reader.Stderr($"expected expression after '{op_char}' operator.");
+                    signal.reader.Error($"expected expression after '{op_char}' operator.");
             }
 
             return false;

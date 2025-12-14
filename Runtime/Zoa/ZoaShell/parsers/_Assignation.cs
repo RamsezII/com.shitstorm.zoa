@@ -24,12 +24,12 @@ namespace _ZOA_
             )
                 if (!scope.TryGetCell(var_name, out MemCell var_cell))
                 {
-                    signal.reader.Stderr($"no variable named '{var_name}'.");
+                    signal.reader.Error($"no variable named '{var_name}'.");
                     goto failure;
                 }
                 else if (expected_type != null && !var_cell.type.CanBeAssignedTo(expected_type))
                 {
-                    signal.reader.Stderr($"expted variable of type {expected_type}, got {var_cell.type}");
+                    signal.reader.Error($"expted variable of type {expected_type}, got {var_cell.type}");
                     goto failure;
                 }
                 else
@@ -124,7 +124,7 @@ namespace _ZOA_
                         }
                         else
                         {
-                            signal.reader.Stderr($"expected expression after '{op_name}' operator.");
+                            signal.reader.Error($"expected expression after '{op_name}' operator.");
                             goto failure;
                         }
                     }

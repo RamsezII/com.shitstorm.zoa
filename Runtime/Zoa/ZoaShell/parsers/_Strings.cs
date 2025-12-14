@@ -90,17 +90,17 @@ namespace _ZOA_
                                 current_fragment = string.Empty;
                             }
 
-                            if (TryParseExpression(signal, scope, false, T_object, exec_stack))
+                            if (TryParseExpression(signal, scope, false, typeof(object), exec_stack))
                                 exe_list.Add(exec_stack._stack[^1]);
                             else
                             {
-                                signal.reader.Stderr($"expected expression after '{{'.");
+                                signal.reader.Error($"expected expression after '{{'.");
                                 return false;
                             }
 
                             if (!signal.reader.TryReadChar_match('}'))
                             {
-                                signal.reader.Stderr($"expected closing braquet '}}'.");
+                                signal.reader.Error($"expected closing braquet '}}'.");
                                 return false;
                             }
 
@@ -122,7 +122,7 @@ namespace _ZOA_
 
             signal.reader.LintToThisPosition(signal.reader.lint_theme.quotes, false);
 
-            signal.reader.Stderr($"string error: expected closing quote '{sep}'.");
+            signal.reader.Error($"string error: expected closing quote '{sep}'.");
             return false;
         }
     }

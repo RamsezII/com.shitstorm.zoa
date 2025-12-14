@@ -1,13 +1,14 @@
-﻿namespace _ZOA_.Ast
+﻿using _ZOA_.Ast;
+
+namespace _ZOA_
 {
-    public abstract class AstAsbtract
+    public sealed class VScope : MScope<MemCell>
     {
 
         //----------------------------------------------------------------------------------------------------------
 
-        public bool TryParse(in Signal signal)
+        internal VScope(in VScope parent) : base(parent)
         {
-            return false;
         }
     }
 }

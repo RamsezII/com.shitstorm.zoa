@@ -167,7 +167,7 @@ namespace _ZOA_
 
         failure:
             path = null;
-            signal.reader.Stderr($"could not parse path '{path}'.");
+            signal.reader.Error($"could not parse path '{path}'.");
             return false;
         }
     }

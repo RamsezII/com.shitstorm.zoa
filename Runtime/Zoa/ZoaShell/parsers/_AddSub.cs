@@ -32,14 +32,14 @@ namespace _ZOA_
 
                     var term1 = exec_stack._stack[^1];
 
-                    if (TryParseAddSub(signal, scope, expected_type ?? T_object, exec_stack))
+                    if (TryParseAddSub(signal, scope, expected_type ?? typeof(object), exec_stack))
                     {
                         var term2 = exec_stack._stack[^1];
                         if (TryParsePair(signal, expected_type, code, term1, term2, exec_stack))
                             return true;
                     }
                     else
-                        signal.reader.Stderr($"expected expression after '{op_symbol}' operator.");
+                        signal.reader.Error($"expected expression after '{op_symbol}' operator.");
                 }
             }
 

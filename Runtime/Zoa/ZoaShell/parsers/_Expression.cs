@@ -4,16 +4,6 @@ namespace _ZOA_
 {
     partial class ZoaShell
     {
-        enum IncrementOperators : byte
-        {
-            AddBefore,
-            SubBefore,
-            AddAfter,
-            SubAfter,
-        }
-
-        //----------------------------------------------------------------------------------------------------------
-
         internal bool TryParseExpression(
             in Signal signal,
             MemScope scope,
@@ -33,7 +23,7 @@ namespace _ZOA_
                 if (!signal.reader.TryReadChar_match(',', lint: signal.reader.lint_theme.argument_coma) && !signal.reader.TryPeekChar_match(')', out _))
                     if (signal.reader.strict_syntax)
                     {
-                        signal.reader.Stderr($"expected ',' or ')' after expression");
+                        signal.reader.Error($"expected ',' or ')' after expression");
                         return false;
                     }
 
@@ -47,20 +37,20 @@ namespace _ZOA_
 
                 ExecutionStack exec_stack_yes = new();
 
-                if (!TryParseExpression(signal, scope, false, expected_type ?? T_object, exec_stack_yes))
-                    signal.reader.Stderr($"expected expression after ternary operator '?'");
+                if (!TryParseExpression(signal, scope, false, expected_type ?? typeof(object), exec_stack_yes))
+                    signal.reader.Error($"expected expression after ternary operator '?'");
                 else
                 {
                     Executor exe_yes = exec_stack._stack[^1];
 
                     if (!signal.reader.TryReadChar_match(':', lint: signal.reader.lint_theme.operators))
-                        signal.reader.Stderr($"expected ternary operator delimiter ':'");
+                        signal.reader.Error($"expected ternary operator delimiter ':'");
                     else
                     {
                         ExecutionStack exec_stack_no = new();
 
-                        if (!TryParseExpression(signal, scope, false, expected_type ?? T_object, exec_stack_no))
-                            signal.reader.Stderr($"expected second expression after ternary operator ':'");
+                        if (!TryParseExpression(signal, scope, false, expected_type ?? typeof(object), exec_stack_no))
+                            signal.reader.Error($"expected second expression after ternary operator ':'");
                         else if (signal.arm_executors)
                         {
                             Executor exe_no = exec_stack._stack[^1];

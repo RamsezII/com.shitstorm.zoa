@@ -13,8 +13,11 @@ namespace _ZOA_
         IEnumerator IEnumerable.GetEnumerator() => _list.GetEnumerator();
     }
 
-    public sealed class ZoaTypes : ZoaList<Type>
+    public class ZoaTypes : ZoaList<Type>
     {
+        public ZoaTypes() : base()
+        {
+        }
         public ZoaTypes(params Type[] elements) : base(elements)
         {
         }

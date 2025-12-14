@@ -16,12 +16,12 @@ namespace _ZOA_
             if (signal.reader.TryReadString_matches_out(out string cont_name, as_function_argument: false, lint: signal.reader.lint_theme.contracts, matches: ZoaContract.contracts.Keys.ToArray()))
                 if (!ZoaContract.contracts.TryGetValue(cont_name, out ZoaContract contract))
                 {
-                    signal.reader.Stderr($"no contract named '{cont_name}'.");
+                    signal.reader.Error($"no contract named '{cont_name}'.");
                     goto failure;
                 }
                 else if (expected_type != null && (contract.output_type == null || !contract.output_type.CanBeAssignedTo(expected_type)))
                 {
-                    signal.reader.Stderr($"expected contract of type {expected_type}, got {contract.output_type}");
+                    signal.reader.Error($"expected contract of type {expected_type}, got {contract.output_type}");
                     goto failure;
                 }
                 else
@@ -36,7 +36,7 @@ namespace _ZOA_
                                     opts_exe.Add(pair.Key.long_name, exec_stack._stack[^1]);
                                 else
                                 {
-                                    signal.reader.Stderr($"could not parse expression for option {(pair.Key.short_name != '\0' ? $"\"-{pair.Key.short_name}\"" : string.Empty)}/\"--{pair.Key.long_name}\"");
+                                    signal.reader.Error($"could not parse expression for option {(pair.Key.short_name != '\0' ? $"\"-{pair.Key.short_name}\"" : string.Empty)}/\"--{pair.Key.long_name}\"");
                                     goto failure;
                                 }
                     }
@@ -49,7 +49,7 @@ namespace _ZOA_
 
                     if (expects_parenthesis && !found_parenthesis)
                     {
-                        signal.reader.Stderr($"'{contract.name}' expected opening parenthesis '('");
+                        signal.reader.Error($"'{contract.name}' expected opening parenthesis '('");
                         goto failure;
                     }
 
@@ -64,7 +64,7 @@ namespace _ZOA_
                                 prms_exe.Add(exec_stack._stack[^1]);
                             else
                             {
-                                signal.reader.Stderr($"could not parse argument[{i}]");
+                                signal.reader.Error($"could not parse argument[{i}]");
                                 goto failure;
                             }
                         }
@@ -79,7 +79,7 @@ namespace _ZOA_
 
                     if ((expects_parenthesis || found_parenthesis) && !signal.reader.TryReadChar_match(')', lint: signal.reader.CloseBraquetLint()))
                     {
-                        signal.reader.Stderr($"'{contract.name}' expected closing parenthesis ')'");
+                        signal.reader.Error($"'{contract.name}' expected closing parenthesis ')'");
                         goto failure;
                     }
 

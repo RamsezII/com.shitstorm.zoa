@@ -1,6 +1,6 @@
-﻿namespace _ZOA_.Ast
+﻿namespace _ZOA_.Ast.execution
 {
-    internal class AstExpression : AstAsbtract
+    public sealed class Executor
     {
 
         //----------------------------------------------------------------------------------------------------------
