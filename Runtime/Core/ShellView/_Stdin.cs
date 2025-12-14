@@ -125,8 +125,8 @@ namespace _ZOA_
 
         bool CheckStdin()
         {
-            string prefixe = GetShellPrefixe().text;
             string current = stdin_field.text;
+            string prefixe = GetShellPrefixe().text;
 
             if (current.StartsWith(prefixe, StringComparison.Ordinal))
                 return true;
@@ -136,7 +136,8 @@ namespace _ZOA_
             else
                 current = prefixe + current[prefixe.Length..];
 
-            stdin_field.text = current;
+            if (!string.Equals(current, stdout_field.text, StringComparison.Ordinal))
+                stdin_field.text = current;
 
             if (stdin_field.caretPosition < prefixe.Length)
                 stdin_field.caretPosition = prefixe.Length;

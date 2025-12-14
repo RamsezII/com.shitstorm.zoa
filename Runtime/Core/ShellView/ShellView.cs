@@ -1,4 +1,5 @@
-﻿using _SGUI_;
+﻿using _ARK_;
+using _SGUI_;
 using _UTIL_;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace _ZOA_
         public RectTransform content_rT;
         public Scrollbar scrollbar;
 
+        public bool character_wrap;
         [SerializeField] float stdin_h, stdout_h;
         [SerializeField] bool flag_history;
 
@@ -59,11 +61,22 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
+        protected virtual void OnEnable()
+        {
+        }
+
+        protected virtual void OnDisable()
+        {
+            IMGUI_global.instance.clipboard_users.RemoveElement(OnClipboardOperation);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+
         protected virtual void Start()
         {
             stdout_field.rT.anchoredPosition = new Vector2(0, -offset_top_h);
             stdin_field.onValidateInput += OnValidateStdin_char;
-            stdin_field.onValueChanged += OnStdinChanged;
+            stdin_field.onValueChanged.AddListener(OnStdinChanged);
             stdin_field.onSelect.AddListener(OnSelectStdin);
             stdin_field.onDeselect.AddListener(OnDeselectStdin);
 
@@ -97,6 +110,9 @@ namespace _ZOA_
 
             ResetStdin();
             RefreshStdout();
+
+            stdin_field.onSelect.AddListener(_ => IMGUI_global.instance.clipboard_users.AddElement(OnClipboardOperation));
+            stdin_field.onDeselect.AddListener(_ => IMGUI_global.instance.clipboard_users.RemoveElement(OnClipboardOperation));
         }
 
         //----------------------------------------------------------------------------------------------------------
