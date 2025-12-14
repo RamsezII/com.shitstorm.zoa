@@ -30,7 +30,7 @@ namespace _ZOA_
                 Signal sig_change = new(shell, SIG_FLAGS.CHANGE | SIG_FLAGS.LINT, last_reader, null);
                 shell.OnSignal(sig_change);
 
-                stdin_field.lint.text = shell.prefixe._value.lint + sig_change.reader.GetLintResult();
+                SetStdinLint(shell.prefixe._value.lint + sig_change.reader.GetLintResult());
 
                 last_completions_all = last_reader.completions_v.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToArray();
 
@@ -68,7 +68,7 @@ namespace _ZOA_
                 sb.Append(completion);
                 sb.Append(last_reader.text[last_reader.cpl_end..]);
 
-                stdin_field.text = sb.ToString();
+                SetStdinText(sb.ToString());
 
                 stdin_field.caretPosition = shell.prefixe._value.text.Length + last_reader.cpl_start + completion.Length;
             }
@@ -98,7 +98,7 @@ namespace _ZOA_
                 sb.Append(completion);
                 sb.Append(last_reader.text[last_reader.cpl_end..]);
 
-                stdin_field.text = sb.ToString();
+                SetStdinText(sb.ToString());
 
                 stdin_field.caretPosition = shell.prefixe._value.text.Length + last_reader.cpl_start + completion.Length;
             }

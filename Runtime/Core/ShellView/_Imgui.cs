@@ -7,6 +7,9 @@ namespace _ZOA_
     {
         protected virtual bool OnImguiInputs(Event e)
         {
+            if (!stdin_field.isFocused)
+                return false;
+
             if (e.isKey)
                 if (e.type == EventType.KeyDown)
                 {
@@ -58,7 +61,7 @@ namespace _ZOA_
                                     if (TryNavHistory(nav, out string value))
                                     {
                                         flag_history = true;
-                                        stdin_field.text = shell.prefixe._value.text + value;
+                                        SetStdinText(shell.prefixe._value.text + value);
                                         stdin_field.caretPosition = stdin_field.text.Length;
                                     }
 

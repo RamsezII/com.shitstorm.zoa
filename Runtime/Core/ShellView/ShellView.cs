@@ -44,6 +44,8 @@ namespace _ZOA_
 
         protected virtual void Awake()
         {
+            character_wrap = true;
+
             stdout_field = transform.Find("scrollview/viewport/content/std_out").GetComponent<ShellField>();
             stdin_field = stdout_field.transform.Find("std_in").GetComponent<ShellField>();
 
@@ -57,17 +59,22 @@ namespace _ZOA_
 
             shell?.Dispose();
             shell = null;
+
+            stdin_field.onSelect.AddListener(OnSelectStdin);
         }
 
         //----------------------------------------------------------------------------------------------------------
 
         protected virtual void OnEnable()
         {
+            IMGUI_global.instance.clipboard_users.AddElement(OnClipboardOperation);
+            IMGUI_global.instance.inputs_users.AddElement(OnImguiInputs);
         }
 
         protected virtual void OnDisable()
         {
             IMGUI_global.instance.clipboard_users.RemoveElement(OnClipboardOperation);
+            IMGUI_global.instance.inputs_users.RemoveElement(OnImguiInputs);
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -77,17 +84,10 @@ namespace _ZOA_
             stdout_field.rT.anchoredPosition = new Vector2(0, -offset_top_h);
             stdin_field.onValidateInput += OnValidateStdin_char;
             stdin_field.onValueChanged.AddListener(OnStdinChanged);
-            stdin_field.onSelect.AddListener(OnSelectStdin);
-            stdin_field.onDeselect.AddListener(OnDeselectStdin);
 
             shell.Init();
 
-            shell.prefixe.AddListener(value =>
-            {
-                stdin_field.text = value.text;
-                stdin_field.lint.text = value.lint;
-                stdin_field.caretPosition = value.text.Length;
-            });
+            shell.prefixe.AddListener(value => CheckPrefixe());
 
             shell.on_output += AddLine;
 
@@ -110,9 +110,6 @@ namespace _ZOA_
 
             ResetStdin();
             RefreshStdout();
-
-            stdin_field.onSelect.AddListener(_ => IMGUI_global.instance.clipboard_users.AddElement(OnClipboardOperation));
-            stdin_field.onDeselect.AddListener(_ => IMGUI_global.instance.clipboard_users.RemoveElement(OnClipboardOperation));
         }
 
         //----------------------------------------------------------------------------------------------------------

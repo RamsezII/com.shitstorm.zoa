@@ -6,6 +6,20 @@ namespace _ZOA_
 {
     partial class ShellView
     {
+        public void SetStdinText(string text)
+        {
+            if (character_wrap)
+                Util.ForceCharacterWrap(ref text);
+            stdin_field.text = text;
+        }
+
+        public void SetStdinLint(string lint)
+        {
+            if (character_wrap)
+                Util.ForceCharacterWrap(ref lint);
+            stdin_field.lint.text = lint;
+        }
+
         char OnValidateStdin_char(string text, int charIndex, char addedChar)
         {
             switch (shell.status._value)
@@ -23,6 +37,9 @@ namespace _ZOA_
                                 OnSubmit();
                                 ResetStdin();
                                 return '\0';
+
+                            case ' ' when character_wrap:
+                                return Util.NOWRAP_CHAR;
 
                             default:
                                 return addedChar;
@@ -48,7 +65,7 @@ namespace _ZOA_
 
         void OnStdinChanged(string value)
         {
-            if (!CheckStdin())
+            if (!CheckPrefixe())
                 return;
 
             if (!flag_history.PullValue())
@@ -72,6 +89,7 @@ namespace _ZOA_
         protected virtual void OnSelectStdin(string text)
         {
             IMGUI_global.instance.inputs_users.AddElement(OnImguiInputs);
+
             NUCLEOR.delegates.LateUpdate_onEndOfFrame_once += () =>
             {
                 int min_pos = shell.prefixe._value.text?.Length ?? 0;
@@ -80,29 +98,33 @@ namespace _ZOA_
             };
         }
 
-        protected virtual void OnDeselectStdin(string arg0)
-        {
-            IMGUI_global.instance.inputs_users.RemoveElement(OnImguiInputs);
-        }
-
         bool GetStdin(out string stdin, out int cursor_i)
         {
             int pref_len = shell.prefixe._value.text?.Length ?? 0;
             stdin = stdin_field.text[pref_len..];
             cursor_i = stdin_field.caretPosition - pref_len;
+            Util.RemoveCharacterWrap(ref stdin);
             return !string.IsNullOrWhiteSpace(stdin);
         }
 
         void ResetStdin()
         {
             LintedString prefixe = GetShellPrefixe();
+            string pref_text = prefixe.text;
+            string pref_lint = prefixe.lint;
 
-            if (!stdin_field.text.Equals(prefixe.text, StringComparison.Ordinal))
-                stdin_field.text = prefixe.text;
+            if (character_wrap)
+            {
+                Util.ForceCharacterWrap(ref pref_text);
+                Util.ForceCharacterWrap(ref pref_lint);
+            }
 
-            stdin_field.lint.text = prefixe.lint;
+            if (!stdin_field.text.Equals(pref_text, StringComparison.Ordinal))
+                stdin_field.text = pref_text;
 
-            stdin_field.caretPosition = prefixe.text.Length;
+            stdin_field.lint.text = pref_lint;
+
+            stdin_field.caretPosition = pref_text.Length;
 
             ResizeStdin();
         }
@@ -123,10 +145,13 @@ namespace _ZOA_
                 content_rT.anchoredPosition += new Vector2(0, -bottom_height);
         }
 
-        bool CheckStdin()
+        bool CheckPrefixe()
         {
             string current = stdin_field.text;
             string prefixe = GetShellPrefixe().text;
+
+            if (character_wrap)
+                Util.ForceCharacterWrap(ref prefixe);
 
             if (current.StartsWith(prefixe, StringComparison.Ordinal))
                 return true;
