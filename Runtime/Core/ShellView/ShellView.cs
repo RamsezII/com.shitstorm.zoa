@@ -7,8 +7,9 @@ using UnityEngine.UI;
 
 namespace _ZOA_
 {
-    public abstract partial class ShellView : MonoBehaviour
+    public partial class ShellView : MonoBehaviour
     {
+        public SguiTerminal terminal;
         public ShellField stdout_field, stdin_field;
         public TextMeshProUGUI tmp_progress;
         public ScrollRect scrollview;
@@ -45,6 +46,8 @@ namespace _ZOA_
         protected virtual void Awake()
         {
             character_wrap = true;
+
+            terminal = GetComponentInParent<SguiTerminal>(true);
 
             stdout_field = transform.Find("scrollview/viewport/content/std_out").GetComponent<ShellField>();
             stdin_field = stdout_field.transform.Find("std_in").GetComponent<ShellField>();
@@ -110,6 +113,9 @@ namespace _ZOA_
 
             ResetStdin();
             RefreshStdout();
+
+            if (terminal != null)
+                terminal.trad_title.SetTrad(shell.GetType().FullName);
         }
 
         //----------------------------------------------------------------------------------------------------------

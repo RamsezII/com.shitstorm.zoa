@@ -1,4 +1,6 @@
-﻿using System;
+﻿using _ZOA_.Ast.execution;
+using System;
+using System.Collections.Generic;
 
 namespace _ZOA_.Ast.compilation
 {
@@ -26,7 +28,7 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseUnary(in Signal signal, in TScope tscope, in TStack tstack, in Type expected_type, out AstExpression ast_unary)
+        public static bool TryParseUnary(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_unary)
         {
             int read_old = signal.reader.read_i;
 
@@ -45,7 +47,7 @@ namespace _ZOA_.Ast.compilation
                     read_old = signal.reader.read_i;
 
                     if (!signal.reader.TryReadArgument(out string var_name, false, signal.reader.lint_theme.variables, skippables: null))
-                        if (AstVariable.TryParseVariable(signal, tscope, tstack, expected_type, out var ast_var))
+                        if (AstVariable.TryParseVariable(signal, tscope, expected_type, out var ast_var))
                         {
                             ast_unary = new AstPreIncrement(code, ast_var);
                             return true;
@@ -54,7 +56,7 @@ namespace _ZOA_.Ast.compilation
                     signal.reader.Error($"expected variable after increment operator '{op_char}{op_char}'.");
                     goto failure;
                 }
-                else if (AstFactor.TryParseFactor(signal, tscope, tstack, expected_type, out var ast_factor))
+                else if (AstFactor.TryParseFactor(signal, tscope, expected_type, out var ast_factor))
                 {
                     ast_unary = new AstUnary(code, ast_factor);
                     return true;
@@ -65,7 +67,7 @@ namespace _ZOA_.Ast.compilation
                     goto failure;
                 }
             }
-            else if (AstFactor.TryParseFactor(signal, tscope, tstack, expected_type, out var ast_factor))
+            else if (AstFactor.TryParseFactor(signal, tscope, expected_type, out var ast_factor))
             {
                 ast_unary = ast_factor;
                 return true;
@@ -85,9 +87,9 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal override void OnExecution(in execution.Janitor janitor)
+        internal override void OnExecutionStack(in Janitor janitor)
         {
-            base.OnExecution(janitor);
+            base.OnExecutionStack(janitor);
 
             //var factor = exec_stack._stack[^1];
 

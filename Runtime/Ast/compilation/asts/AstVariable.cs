@@ -14,7 +14,7 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseVariable(in Signal signal, in TScope tscope, in TStack tstack, in Type expected_type, out AstVariable ast_variable)
+        public static bool TryParseVariable(in Signal signal, in TScope tscope, in Type expected_type, out AstVariable ast_variable)
         {
             ast_variable = null;
             return false;

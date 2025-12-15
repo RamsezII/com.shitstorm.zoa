@@ -1,5 +1,6 @@
 ﻿using _COBRA_;
 using _ZOA_.Ast.execution;
+using System.Collections.Generic;
 
 namespace _ZOA_.Ast.compilation
 {
@@ -23,9 +24,9 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseAddition(in Signal signal, in TScope tscope, in TStack tstack, out AstExpression ast_addition)
+        public static bool TryParseAddition(in Signal signal, in TScope tscope, out AstExpression ast_addition)
         {
-            if (AstTerm.TryParseTerm(signal, tscope, tstack, typeof(CobraNumber), out var term))
+            if (AstTerm.TryParseTerm(signal, tscope, typeof(CobraNumber), out var term))
             {
                 int read_old = signal.reader.read_i;
                 if (!signal.reader.TryReadChar_matches_out(out char op_symbol, true, "+-"))
@@ -45,7 +46,7 @@ namespace _ZOA_.Ast.compilation
                         _ => throw new System.NotImplementedException(),
                     };
 
-                    if (TryParseAddition(signal, tscope, tstack, out var addR))
+                    if (TryParseAddition(signal, tscope, out var addR))
                     {
                         ast_addition = new AstAddition(code, term, addR);
                         return true;
@@ -62,9 +63,9 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal override void OnExecution(in Janitor janitor)
+        internal override void OnExecutionStack(in Janitor janitor)
         {
-            base.OnExecution(janitor);
+            base.OnExecutionStack(janitor);
         }
     }
 }

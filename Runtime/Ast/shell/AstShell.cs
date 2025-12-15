@@ -1,4 +1,5 @@
-﻿using _ZOA_.Ast.compilation;
+﻿using _SGUI_;
+using _ZOA_.Ast.compilation;
 using _ZOA_.Ast.execution;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,6 +32,24 @@ namespace _ZOA_
 
         readonly List<Janitor> janitors = new();
         Janitor front_janitor;
+
+        //----------------------------------------------------------------------------------------------------------
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void OnAfterSceneLoad()
+        {
+            SguiTerminal.onSoftwareButtonAddWindowList += list =>
+            {
+                var button = list.AddButton();
+                button.trad.SetTrads(new("AST"));
+                button.button.onClick.AddListener(() =>
+                {
+                    SguiTerminal terminal = (SguiTerminal)OSView.instance.softwaresButtons[typeof(SguiTerminal)].InstantiateSoftware();
+                    ShellView shellView = terminal.rt_shellview.gameObject.AddComponent<ShellView>();
+                    shellView.shell = new AstShell();
+                });
+            };
+        }
 
         //----------------------------------------------------------------------------------------------------------
 

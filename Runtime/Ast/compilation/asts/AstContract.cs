@@ -14,7 +14,7 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseContract(in Signal signal, in TScope tscope, in TStack tstack, in Type expected_type, out AstContract ast_contract)
+        public static bool TryParseContract(in Signal signal, in TScope tscope, in Type expected_type, out AstContract ast_contract)
         {
             ast_contract = null;
             return false;

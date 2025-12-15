@@ -16,7 +16,7 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal virtual void OnExecution(in Janitor janitor)
+        internal virtual void OnExecutionStack(in Janitor janitor)
         {
         }
     }

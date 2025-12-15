@@ -16,7 +16,7 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseString(in Signal signal, in TScope tscope, in TStack tstack, out AstString ast_string)
+        public static bool TryParseString(in Signal signal, in TScope tscope, out AstString ast_string)
         {
             int read_old = signal.reader.read_i;
 
@@ -60,7 +60,7 @@ namespace _ZOA_.Ast.compilation
                             if (current_fragment.Length > 0)
                                 asts.Add(new AstLiteral<string>(current_fragment));
 
-                            if (TryParseExpression(signal, tscope, tstack, false, typeof(object), out AstExpression expression))
+                            if (TryParseExpression(signal, tscope, false, typeof(object), out AstExpression expression))
                                 asts.Add(expression);
                             else
                             {

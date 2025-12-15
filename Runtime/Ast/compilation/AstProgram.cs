@@ -5,9 +5,8 @@ namespace _ZOA_.Ast.compilation
     internal sealed class AstProgram
     {
         public readonly TScope tscope = new(parent: null);
-        public readonly TStack tstack = new();
 
-        public readonly List<AstBlock> asts = new();
+        public readonly List<AstAbstract> asts = new();
 
         public readonly bool execute_in_background;
 
@@ -22,8 +21,8 @@ namespace _ZOA_.Ast.compilation
             tscope._vars.Add("_assets_dir_", typeof(string));
 #endif
 
-            while (signal.reader.HasNext() && AstBlock.TryParseBlock(signal, tscope, tstack, out AstBlock ast_block))
-                asts.Add(ast_block);
+            while (signal.reader.HasNext() && AstBlock.TryParseBlock(signal, tscope, out var ast))
+                asts.Add(ast);
 
             if (signal.reader.sig_error != null)
                 return;

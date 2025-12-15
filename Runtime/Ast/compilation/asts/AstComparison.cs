@@ -36,9 +36,9 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseComparison(in Signal signal, in TScope tscope, in TStack tstack, out AstExpression ast_comparison)
+        public static bool TryParseComparison(in Signal signal, in TScope tscope, out AstExpression ast_comparison)
         {
-            if (!TryParseExpression(signal, tscope, tstack, false, typeof(object), out ast_comparison))
+            if (!TryParseExpression(signal, tscope, false, typeof(object), out ast_comparison))
                 return false;
             else if (!signal.reader.TryReadString_matches_out(out string op_name, false, signal.reader.lint_theme.operators, codes.Keys))
                 return true;
@@ -46,7 +46,7 @@ namespace _ZOA_.Ast.compilation
             {
                 Codes code = codes[op_name];
 
-                if (AstAddition.TryParseAddition(signal, tscope, tstack, out var astR))
+                if (AstAddition.TryParseAddition(signal, tscope, out var astR))
                 {
                     ast_comparison = new AstComparison(code, ast_comparison, astR);
                     return true;

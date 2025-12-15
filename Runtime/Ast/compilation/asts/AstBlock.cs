@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using _ZOA_.Ast.execution;
+using System.Collections.Generic;
 
 namespace _ZOA_.Ast.compilation
 {
     internal sealed class AstBlock : AstAbstract
     {
-        public readonly List<AstAbstract> asts;
+        readonly List<AstAbstract> asts;
 
         //----------------------------------------------------------------------------------------------------------
 
@@ -15,7 +16,7 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseBlock(in Signal signal, in TScope tscope, in TStack tstack, out AstBlock ast_block)
+        public static bool TryParseBlock(in Signal signal, in TScope tscope, out AstAbstract ast)
         {
         skipped_comments:
             if (signal.reader.TryReadChar_match('#', lint: signal.reader.lint_theme.comments))
@@ -26,7 +27,7 @@ namespace _ZOA_.Ast.compilation
 
             if (signal.reader.TryReadChar_match(';', lint: signal.reader.lint_theme.command_separators))
             {
-                ast_block = null;
+                ast = null;
                 return true;
             }
 
@@ -37,7 +38,7 @@ namespace _ZOA_.Ast.compilation
                 var sub_scope = new TScope(tscope);
                 var asts = new List<AstAbstract>();
 
-                while (TryParseBlock(signal, sub_scope, tstack, out var sub_block))
+                while (TryParseBlock(signal, sub_scope, out var sub_block))
                     asts.Add(sub_block);
 
                 if (signal.reader.sig_error != null)
@@ -45,7 +46,7 @@ namespace _ZOA_.Ast.compilation
 
                 if (signal.reader.TryReadChar_match('}', lint: signal.reader.CloseBraquetLint()))
                 {
-                    ast_block = new(asts);
+                    ast = new AstBlock(asts);
                     return true;
                 }
                 else
@@ -54,18 +55,25 @@ namespace _ZOA_.Ast.compilation
                     goto failure;
                 }
             }
-            else
+            else if (AstExpression.TryParseExpression(signal, tscope, false, null, out var expression))
             {
-                if (AstExpression.TryParseExpression(signal, tscope, tstack, false, null, out var expression))
-                {
-                    ast_block = new(new() { expression, });
-                    return true;
-                }
+                ast = expression;
+                return true;
             }
 
         failure:
-            ast_block = null;
+            ast = null;
             return false;
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+
+        internal override void OnExecutionStack(in Janitor janitor)
+        {
+            base.OnExecutionStack(janitor);
+
+            for (int i = asts.Count - 1; i >= 0; i--)
+                asts[i].OnExecutionStack(null);
         }
     }
 }

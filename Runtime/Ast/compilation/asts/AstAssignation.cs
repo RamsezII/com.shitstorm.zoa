@@ -1,4 +1,5 @@
 ﻿using _COBRA_;
+using _ZOA_.Ast.execution;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +52,7 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal static bool TryParseAssignation(in Signal signal, in TScope tscope, in TStack tstack, in Type expected_type, out AstAssignation ast_assignation)
+        internal static bool TryParseAssignation(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_assignation)
         {
             int read_old = signal.reader.read_i;
 
@@ -90,7 +91,7 @@ namespace _ZOA_.Ast.compilation
                     {
                         Codes code = codes[op_name];
 
-                        if (TryParseExpression(signal, tscope, tstack, false, var_type, out AstExpression expr))
+                        if (TryParseExpression(signal, tscope, false, var_type, out AstExpression expr))
                         {
                             ast_assignation = new AstAssignation(var_name, code, expr, var_type);
                             return true;
@@ -111,9 +112,9 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal override void OnExecution(in execution.Janitor janitor)
+        internal override void OnExecutionStack(in Janitor janitor)
         {
-            base.OnExecution(janitor);
+            base.OnExecutionStack(janitor);
 
             //object value = expr_exe.output;
 

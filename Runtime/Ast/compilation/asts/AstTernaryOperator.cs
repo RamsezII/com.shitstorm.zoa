@@ -17,25 +17,30 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseTernary(in Signal signal, in TScope tscope, in TStack tstack, in Type expected_type, out AstExpression ast)
+        public static bool TryParseTernary(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_ternary)
         {
-            if (!AstBinaryOperation.TryParseOr(signal, tscope, tstack, out ast))
-                if (signal.reader.sig_error == null)
+            if (!AstAssignation.TryParseAssignation(signal, tscope, expected_type, out ast_ternary))
+                if (signal.reader.sig_error != null)
                     return false;
-                else
-                    goto failure;
+
+            if (ast_ternary == null)
+                if (!AstBinaryOperation.TryParseOr(signal, tscope, out ast_ternary))
+                    if (signal.reader.sig_error == null)
+                        return false;
+                    else
+                        goto failure;
 
             if (!signal.reader.TryReadChar_match('?', lint: signal.reader.lint_theme.operators))
                 return true;
             else
             {
-                if (ast.output_type != typeof(bool))
+                if (ast_ternary.output_type != typeof(bool))
                 {
-                    signal.reader.Error($"expected {typeof(bool)} after ternary operator '?', got {ast.output_type}");
+                    signal.reader.Error($"expected {typeof(bool)} after ternary operator '?', got {ast_ternary.output_type}");
                     goto failure;
                 }
 
-                if (!TryParseExpression(signal, tscope, tstack, false, expected_type ?? typeof(object), out var expr_yes))
+                if (!TryParseExpression(signal, tscope, false, expected_type ?? typeof(object), out var expr_yes))
                     signal.reader.Error($"expected expression after ternary operator '?'");
                 else
                 {
@@ -43,7 +48,7 @@ namespace _ZOA_.Ast.compilation
                         signal.reader.Error($"expected ternary operator delimiter ':'");
                     else
                     {
-                        if (!TryParseExpression(signal, tscope, tstack, false, expected_type ?? typeof(object), out var expr_no))
+                        if (!TryParseExpression(signal, tscope, false, expected_type ?? typeof(object), out var expr_no))
                             signal.reader.Error($"expected second expression after ternary operator ':'");
                         else
                         {
@@ -54,7 +59,7 @@ namespace _ZOA_.Ast.compilation
                                 goto failure;
                             }
 
-                            ast = new AstTernaryOperator(ast, expr_yes, expr_no, output_type);
+                            ast_ternary = new AstTernaryOperator(ast_ternary, expr_yes, expr_no, output_type);
                             return true;
                         }
                     }
@@ -63,7 +68,7 @@ namespace _ZOA_.Ast.compilation
 
         failure:
             signal.reader.Error("could not parse expression");
-            ast = null;
+            ast_ternary = null;
             return false;
         }
     }

@@ -33,9 +33,9 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseTerm(in Signal signal, in TScope tscope, in TStack tstack, in Type expected_type, out AstExpression term)
+        public static bool TryParseTerm(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression term)
         {
-            if (!AstUnary.TryParseUnary(signal, tscope, tstack, expected_type, out term))
+            if (!AstUnary.TryParseUnary(signal, tscope, expected_type, out term))
                 if (signal.reader.sig_error != null)
                     return false;
 
@@ -45,7 +45,7 @@ namespace _ZOA_.Ast.compilation
             {
                 Codes code = codes[op_name];
 
-                if (TryParseTerm(signal, tscope, tstack, expected_type, out var termR))
+                if (TryParseTerm(signal, tscope, expected_type, out var termR))
                 {
                     term = new AstTerm(code, term, termR, Util_cobra.EnglobingType(term.output_type, termR.output_type));
                     return true;

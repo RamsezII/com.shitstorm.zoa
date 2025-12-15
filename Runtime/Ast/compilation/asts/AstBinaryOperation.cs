@@ -1,4 +1,5 @@
 ﻿using _ZOA_.Ast.execution;
+using System.Collections.Generic;
 
 namespace _ZOA_.Ast.compilation
 {
@@ -26,19 +27,19 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseOr(in Signal signal, in TScope tscope, in TStack tstack, out AstExpression ast) => TryParseBinaryOperation(signal, tscope, tstack, OpDepth.Or, out ast);
-        static bool TryParseBinaryOperation(in Signal signal, in TScope tscope, in TStack tstack, in OpDepth op_depth, out AstExpression ast_binaryOperation)
+        public static bool TryParseOr(in Signal signal, in TScope tscope, out AstExpression ast) => TryParseBinaryOperation(signal, tscope, OpDepth.Or, out ast);
+        static bool TryParseBinaryOperation(in Signal signal, in TScope tscope, in OpDepth op_depth, out AstExpression ast_binaryOperation)
         {
             switch (op_depth)
             {
                 case OpDepth.Or:
                 case OpDepth.And:
-                    if (TryParseBinaryOperation(signal, tscope, tstack, op_depth + 1, out ast_binaryOperation))
+                    if (TryParseBinaryOperation(signal, tscope, op_depth + 1, out ast_binaryOperation))
                         if (!signal.reader.TryReadString_match_out(out string op_name, as_function_argument: false, lint: signal.reader.lint_theme.keywords, match: "or"))
                             return true;
                         else
                         {
-                            if (TryParseBinaryOperation(signal, tscope, tstack, op_depth, out var astR))
+                            if (TryParseBinaryOperation(signal, tscope, op_depth, out var astR))
                             {
                                 ast_binaryOperation = new AstBinaryOperation(op_depth, ast_binaryOperation, astR);
                                 return true;
@@ -62,9 +63,9 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal override void OnExecution(in Janitor janitor)
+        internal override void OnExecutionStack(in Janitor janitor)
         {
-            base.OnExecution(janitor);
+            base.OnExecutionStack(janitor);
         }
     }
 }

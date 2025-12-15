@@ -15,13 +15,12 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseFactor(in Signal signal, in TScope tscope, in TStack tstack, in Type expected_type, out AstExpression ast_factor)
+        public static bool TryParseFactor(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_factor)
         {
             if (signal.reader.sig_error == null)
                 if (expected_type == Util_cobra.T_path)
                     if (signal.shell.TryParsePath(signal, FS_TYPES.BOTH, false, out string path))
                     {
-                        tstack.Add(typeof(string));
                         ast_factor = new AstLiteral<string>(path);
                         return true;
                     }
@@ -30,7 +29,6 @@ namespace _ZOA_.Ast.compilation
                 if (expected_type == Util_cobra.T_fpath)
                     if (signal.shell.TryParsePath(signal, FS_TYPES.FILE, false, out string fpath))
                     {
-                        tstack.Add(typeof(string));
                         ast_factor = new AstLiteral<string>(fpath);
                         return true;
                     }
@@ -39,7 +37,6 @@ namespace _ZOA_.Ast.compilation
                 if (expected_type == Util_cobra.T_dpath)
                     if (signal.shell.TryParsePath(signal, FS_TYPES.DIRECTORY, false, out string dpath))
                     {
-                        tstack.Add(typeof(string));
                         ast_factor = new AstLiteral<string>(dpath);
                         return true;
                     }
@@ -48,7 +45,7 @@ namespace _ZOA_.Ast.compilation
                 if (signal.reader.TryReadChar_match('('))
                 {
                     signal.reader.LintOpeningBraquet();
-                    if (!TryParseExpression(signal, tscope, tstack, false, typeof(object), out var expression))
+                    if (!TryParseExpression(signal, tscope, false, typeof(object), out var expression))
                     {
                         signal.reader.Error("expected expression inside factor parenthesis.");
                         goto failure;
@@ -68,7 +65,7 @@ namespace _ZOA_.Ast.compilation
 
             if (signal.reader.sig_error == null)
                 if (expected_type == null || expected_type.CanBeAssignedTo(typeof(string)))
-                    if (AstString.TryParseString(signal, tscope, tstack, out var ast_string))
+                    if (AstString.TryParseString(signal, tscope, out var ast_string))
                     {
                         ast_factor = ast_string;
                         return true;
@@ -77,14 +74,14 @@ namespace _ZOA_.Ast.compilation
                         goto failure;
 
             if (signal.reader.sig_error == null)
-                if (AstContract.TryParseContract(signal, tscope, tstack, expected_type, out var ast_contract))
+                if (AstContract.TryParseContract(signal, tscope, expected_type, out var ast_contract))
                 {
                     ast_factor = ast_contract;
                     return true;
                 }
                 else if (signal.reader.sig_error != null)
                     goto failure;
-                else if (AstVariable.TryParseVariable(signal, tscope, tstack, expected_type, out var ast_variable))
+                else if (AstVariable.TryParseVariable(signal, tscope, expected_type, out var ast_variable))
                 {
                     ast_factor = ast_variable;
                     return true;
