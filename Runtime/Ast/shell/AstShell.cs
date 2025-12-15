@@ -11,22 +11,16 @@ namespace _ZOA_
         /*
 
             Instruction
-            │
-            ├── Assignation (ex: x = ...)
-            │     └── Expression
-            │           └── ...
-            │
             └── Expression
-                └── Or
-                    └── And
-                        └── Comparison
-                            └── Addition (addition, subtraction)
-                                └── Term (multiplication, division, modulo)
-                                    └── Facteur
-                                        ├── Littéral (nombre)
-                                        ├── Variable
-                                        ├── Parenthèse
-                                        └── Appel de fonction
+                └── Assignation (=)
+                    └── Conditional (ternary ? :)
+                        └── Or (||)
+                            └── And (&&)
+                                └── Comparison
+                                    └── Addition (+ -)
+                                        └── Term (* / %)
+                                            └── Unary (! - ~)
+                                                └── Factor
 
         */
 
@@ -49,6 +43,14 @@ namespace _ZOA_
                     shellView.shell = new AstShell();
                 });
             };
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+
+        public override void Init()
+        {
+            base.Init();
+            status.Value = CMD_STATUS.WAIT_FOR_STDIN;
         }
 
         //----------------------------------------------------------------------------------------------------------

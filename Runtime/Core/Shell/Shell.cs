@@ -29,7 +29,7 @@ namespace _ZOA_
 
         //----------------------------------------------------------------------------------------------------------
 
-        public void Init()
+        public virtual void Init()
         {
             Util.AddAction(ref NUCLEOR.delegates.Update_OnShellTick, OnTick);
         }

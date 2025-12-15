@@ -4,18 +4,9 @@ using System;
 
 namespace _ZOA_.Ast.compilation
 {
-    internal abstract class AstFactor : AstExpression
+    static class AstPrimary
     {
-
-        //----------------------------------------------------------------------------------------------------------
-
-        protected AstFactor(in Type output_type) : base(output_type)
-        {
-        }
-
-        //----------------------------------------------------------------------------------------------------------
-
-        public static bool TryParseFactor(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_factor)
+        public static bool TryPrimary(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_factor)
         {
             if (signal.reader.sig_error == null)
                 if (expected_type == Util_cobra.T_path)
@@ -45,7 +36,7 @@ namespace _ZOA_.Ast.compilation
                 if (signal.reader.TryReadChar_match('('))
                 {
                     signal.reader.LintOpeningBraquet();
-                    if (!TryParseExpression(signal, tscope, false, typeof(object), out var expression))
+                    if (!AstExpression.TryExpr(signal, tscope, false, typeof(object), out var expression))
                     {
                         signal.reader.Error("expected expression inside factor parenthesis.");
                         goto failure;

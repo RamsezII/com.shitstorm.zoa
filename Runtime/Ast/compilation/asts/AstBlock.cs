@@ -3,50 +3,37 @@ using System.Collections.Generic;
 
 namespace _ZOA_.Ast.compilation
 {
-    internal sealed class AstBlock : AstAbstract
+    internal sealed class AstBlock : AstStatement
     {
-        readonly List<AstAbstract> asts;
+        readonly List<AstStatement> asts;
 
         //----------------------------------------------------------------------------------------------------------
 
-        AstBlock(in List<AstAbstract> asts) : base(null)
+        AstBlock(in List<AstStatement> asts)
         {
             this.asts = asts;
         }
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseBlock(in Signal signal, in TScope tscope, out AstAbstract ast)
+        public static bool TryBlock(in Signal signal, in TScope tscope, out AstBlock ast_block)
         {
-        skipped_comments:
-            if (signal.reader.TryReadChar_match('#', lint: signal.reader.lint_theme.comments))
-            {
-                signal.reader.SkipUntil('\n');
-                goto skipped_comments;
-            }
-
-            if (signal.reader.TryReadChar_match(';', lint: signal.reader.lint_theme.command_separators))
-            {
-                ast = null;
-                return true;
-            }
-
             if (signal.reader.TryReadChar_match('{'))
             {
                 signal.reader.LintOpeningBraquet();
 
                 var sub_scope = new TScope(tscope);
-                var asts = new List<AstAbstract>();
+                var asts = new List<AstStatement>();
 
-                while (TryParseBlock(signal, sub_scope, out var sub_block))
-                    asts.Add(sub_block);
+                while (TryStatement(signal, sub_scope, out var ast_statement))
+                    asts.Add(ast_statement);
 
                 if (signal.reader.sig_error != null)
                     goto failure;
 
                 if (signal.reader.TryReadChar_match('}', lint: signal.reader.CloseBraquetLint()))
                 {
-                    ast = new AstBlock(asts);
+                    ast_block = new AstBlock(asts);
                     return true;
                 }
                 else
@@ -55,14 +42,9 @@ namespace _ZOA_.Ast.compilation
                     goto failure;
                 }
             }
-            else if (AstExpression.TryParseExpression(signal, tscope, false, null, out var expression))
-            {
-                ast = expression;
-                return true;
-            }
 
         failure:
-            ast = null;
+            ast_block = null;
             return false;
         }
 

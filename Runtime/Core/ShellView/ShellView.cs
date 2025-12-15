@@ -96,6 +96,12 @@ namespace _ZOA_
 
             shell.status.AddListener(value =>
             {
+                if (terminal != null)
+                    if (value == CMD_STATUS.WAIT_FOR_STDIN)
+                        terminal.trad_title.SetTrad(shell.GetType().Name);
+                    else
+                        terminal.trad_title.SetTrad($"{shell.GetType().Name}:{value}");
+
                 switch (value)
                 {
                     case CMD_STATUS.WAIT_FOR_STDIN:
@@ -113,9 +119,6 @@ namespace _ZOA_
 
             ResetStdin();
             RefreshStdout();
-
-            if (terminal != null)
-                terminal.trad_title.SetTrad(shell.GetType().FullName);
         }
 
         //----------------------------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@ namespace _ZOA_.Ast.compilation
     {
         public readonly TScope tscope = new(parent: null);
 
-        public readonly List<AstAbstract> asts = new();
+        public readonly List<AstStatement> asts = new();
 
         public readonly bool execute_in_background;
 
@@ -21,7 +21,7 @@ namespace _ZOA_.Ast.compilation
             tscope._vars.Add("_assets_dir_", typeof(string));
 #endif
 
-            while (signal.reader.HasNext() && AstBlock.TryParseBlock(signal, tscope, out var ast))
+            while (signal.reader.HasNext() && AstStatement.TryStatement(signal, tscope, out var ast))
                 asts.Add(ast);
 
             if (signal.reader.sig_error != null)

@@ -8,12 +8,19 @@ namespace _ZOA_.Ast.compilation
     {
         internal enum Codes : byte
         {
-            Add,
-            Sub,
+            Positive,
+            Negative,
             Not,
-            PreIncrement,
-            PreDecrement,
+            Anti,
         }
+
+        static readonly Dictionary<string, Codes> codes = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "+", Codes.Positive },
+            { "-", Codes.Negative },
+            { "!", Codes.Not },
+            { "~", Codes.Anti },
+        };
 
         readonly Codes code;
         readonly AstExpression ast_factor;
@@ -28,48 +35,53 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        public static bool TryParseUnary(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_unary)
+        public static bool TryUnary(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_unary)
         {
             int read_old = signal.reader.read_i;
 
-            if (signal.reader.TryReadChar_matches_out(out char op_char, true, "+-!"))
+            if (signal.reader.TryReadString_matches_out(out string match, false, signal.reader.lint_theme.operators, codes.Keys))
             {
-                Codes code = op_char switch
+                Codes code = codes[match];
+                if (TryUnary(signal, tscope, expected_type, out ast_unary))
                 {
-                    '+' => Codes.Add,
-                    '-' => Codes.Sub,
-                    '!' => Codes.Not,
-                    _ => 0,
-                };
-
-                if ((code == Codes.Add || code == Codes.Sub) && signal.reader.TryReadChar_match(op_char, signal.reader.lint_theme.operators, skippables: null))
-                {
-                    read_old = signal.reader.read_i;
-
-                    if (!signal.reader.TryReadArgument(out string var_name, false, signal.reader.lint_theme.variables, skippables: null))
-                        if (AstVariable.TryParseVariable(signal, tscope, expected_type, out var ast_var))
-                        {
-                            ast_unary = new AstPreIncrement(code, ast_var);
-                            return true;
-                        }
-
-                    signal.reader.Error($"expected variable after increment operator '{op_char}{op_char}'.");
-                    goto failure;
-                }
-                else if (AstFactor.TryParseFactor(signal, tscope, expected_type, out var ast_factor))
-                {
-                    ast_unary = new AstUnary(code, ast_factor);
+                    ast_unary = new AstUnary(code, ast_unary);
                     return true;
                 }
                 else
                 {
-                    signal.reader.Error($"expected factor after '{op_char}'.");
+                    signal.reader.Error($"expected expression after unary operator '{match}'.");
                     goto failure;
                 }
             }
-            else if (AstFactor.TryParseFactor(signal, tscope, expected_type, out var ast_factor))
+            // postfix
+            else if (AstPrimary.TryPrimary(signal, tscope, expected_type, out ast_unary))
             {
-                ast_unary = ast_factor;
+                if (signal.reader.TryReadChar_match('['))
+                {
+                    signal.reader.LintOpeningBraquet();
+                    if (TryExpr(signal, tscope, false, typeof(int), out var ast_index))
+                        if (signal.reader.TryReadChar_match(']'))
+                        {
+                            signal.reader.LintClosingBraquet();
+                            ast_unary = new AstIndexer(ast_unary, ast_index, ast_unary.output_type);
+                        }
+                        else
+                        {
+                            signal.reader.Error($"expected ']' after indexer");
+                            goto failure;
+                        }
+                    else
+                    {
+                        signal.reader.Error($"expected expression after '['");
+                        goto failure;
+                    }
+                }
+
+                if (AstAccessor.TryAccessor(signal, ast_unary, out var ast_accessor))
+                    ast_unary = ast_accessor;
+                else if (signal.reader.sig_error != null)
+                    goto failure;
+
                 return true;
             }
             else

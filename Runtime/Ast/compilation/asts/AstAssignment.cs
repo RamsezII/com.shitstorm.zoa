@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace _ZOA_.Ast.compilation
 {
-    internal class AstAssignation : AstExpression
+    internal class AstAssignment : AstExpression
     {
         enum Codes : byte
         {
@@ -43,7 +43,7 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        AstAssignation(in string var_name, in Codes code, in AstExpression expression, in Type output_type) : base(output_type)
+        AstAssignment(in string var_name, in Codes code, in AstExpression expression, in Type output_type) : base(output_type)
         {
             this.var_name = var_name;
             expr_value = expression;
@@ -52,7 +52,7 @@ namespace _ZOA_.Ast.compilation
 
         //----------------------------------------------------------------------------------------------------------
 
-        internal static bool TryParseAssignation(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_assignation)
+        internal static bool TryParseAssignment(in Signal signal, in TScope tscope, in Type expected_type, out AstExpression ast_assignation)
         {
             int read_old = signal.reader.read_i;
 
@@ -91,9 +91,9 @@ namespace _ZOA_.Ast.compilation
                     {
                         Codes code = codes[op_name];
 
-                        if (TryParseExpression(signal, tscope, false, var_type, out AstExpression expr))
+                        if (TryExpr(signal, tscope, false, var_type, out AstExpression expr))
                         {
-                            ast_assignation = new AstAssignation(var_name, code, expr, var_type);
+                            ast_assignation = new AstAssignment(var_name, code, expr, var_type);
                             return true;
                         }
                         else

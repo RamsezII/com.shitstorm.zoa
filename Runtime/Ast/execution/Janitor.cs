@@ -6,8 +6,8 @@ namespace _ZOA_.Ast.execution
 {
     public sealed class Janitor : Disposable
     {
-        internal readonly VScope vscope = new(parent: null);
-        internal readonly VStack stack = new();
+        public readonly VScope vscope = new(parent: null);
+        public readonly VStack vstack = new();
         internal readonly List<Executor> exe_stack = new();
 
         readonly IEnumerator<ExecutionOutput> routine;

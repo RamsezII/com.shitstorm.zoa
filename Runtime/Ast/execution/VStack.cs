@@ -4,15 +4,15 @@ namespace _ZOA_.Ast.execution
 {
     public sealed class VStack
     {
-        internal readonly List<MemCell> _stack = new();
+        internal readonly List<object> _stack = new();
 
         //----------------------------------------------------------------------------------------------------------
 
-        public MemCell Pop()
+        public object Pop()
         {
-            MemCell cell = _stack[^1];
+            object value = _stack[^1];
             _stack.RemoveAt(_stack.Count - 1);
-            return cell;
+            return value;
         }
     }
 }

@@ -60,7 +60,7 @@ namespace _ZOA_.Ast.compilation
                             if (current_fragment.Length > 0)
                                 asts.Add(new AstLiteral<string>(current_fragment));
 
-                            if (TryParseExpression(signal, tscope, false, typeof(object), out AstExpression expression))
+                            if (TryExpr(signal, tscope, false, typeof(object), out AstExpression expression))
                                 asts.Add(expression);
                             else
                             {

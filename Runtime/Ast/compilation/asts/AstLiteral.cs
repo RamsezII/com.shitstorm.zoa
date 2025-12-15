@@ -2,7 +2,7 @@
 
 namespace _ZOA_
 {
-    internal class AstLiteral<T> : AstFactor
+    internal class AstLiteral<T> : AstExpression
     {
         public T value;
         public AstLiteral(in T value) : base(typeof(T))
